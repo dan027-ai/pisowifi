@@ -19,15 +19,6 @@ const Index = () => {
   const [paymentData, setPaymentData] = useState<PaymentFormData | undefined>();
   const { toast } = useToast();
 
-  const activateVoucher = (voucherId: number) => {
-    // Here you would typically make an API call to your Piso WiFi system
-    // to activate the voucher and start the timer
-    toast({
-      title: "WiFi Connected!",
-      description: "Your device is now connected to the network.",
-    });
-  };
-
   const handlePaymentSubmit = (data: PaymentFormData) => {
     toast({
       title: "Processing payment...",
@@ -38,15 +29,9 @@ const Index = () => {
     setTimeout(() => {
       setPaymentData(data);
       setShowReceipt(true);
-      
-      // After successful payment, automatically activate the voucher
-      if (selectedVoucher) {
-        activateVoucher(selectedVoucher.id);
-      }
-
       toast({
         title: "Payment successful!",
-        description: "Your voucher has been activated and your device is now connected.",
+        description: "Your voucher has been sent to your email.",
       });
     }, 2000);
   };
