@@ -1,11 +1,34 @@
 <?php
-$vouchers = [
-    ['id' => 1, 'price' => 5, 'duration' => '3 hours', 'description' => 'Perfect for quick sessions'],
-    ['id' => 2, 'price' => 10, 'duration' => '8 hours', 'description' => 'Great for all-day use'],
-    ['id' => 3, 'price' => 15, 'duration' => '1 day', 'description' => '24 hours of unlimited access'],
-    ['id' => 4, 'price' => 25, 'duration' => '2 days', 'description' => 'Weekend package'],
-    ['id' => 5, 'price' => 50, 'duration' => '5 days', 'description' => 'Best value for longer periods'],
-];
+// Database connection
+$conn = new mysqli("localhost", "root", "", "piso_wifi");
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch vouchers from database
+$result = $conn->query("SELECT * FROM vouchers");
+$vouchers = $result->fetch_all(MYSQLI_ASSOC);
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $voucher_id = $_POST['voucherId'];
+    $phone_number = $_POST['phoneNumber'];
+    $email = $_POST['email'];
+    $amount = $_POST['price'];
+
+    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("issd", $voucher_id, $phone_number, $email, $amount);
+    
+    if ($stmt->execute()) {
+        echo json_encode(["success" => true]);
+    } else {
+        echo json_encode(["success" => false, "error" => $stmt->error]);
+    }
+    
+    $stmt->close();
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -85,10 +108,14 @@ $vouchers = [
         $('#purchaseForm').on('submit', function(e) {
             e.preventDefault();
             
-            const phoneNumber = $('#phoneNumber').val();
-            const email = $('#email').val();
+            const formData = {
+                voucherId: $('#selectedVoucherId').val(),
+                phoneNumber: $('#phoneNumber').val(),
+                email: $('#email').val(),
+                price: $('#selectedPrice').val()
+            };
             
-            if (!phoneNumber || !email) {
+            if (!formData.phoneNumber || !formData.email) {
                 Swal.fire({
                     title: 'Error',
                     text: 'Please fill in all fields',
@@ -104,20 +131,40 @@ $vouchers = [
                 showConfirmButton: false
             });
 
-            // Simulate payment processing
-            setTimeout(() => {
-                Swal.fire({
-                    title: 'Payment successful!',
-                    text: 'Your voucher has been activated and your device is now connected.',
-                    icon: 'success'
-                }).then(() => {
+            $.ajax({
+                type: 'POST',
+                url: 'vouchers.php',
+                data: formData,
+                success: function(response) {
+                    const result = JSON.parse(response);
+                    if (result.success) {
+                        Swal.fire({
+                            title: 'Payment successful!',
+                            text: 'Your voucher has been activated and your device is now connected.',
+                            icon: 'success'
+                        }).then(() => {
+                            Swal.fire({
+                                title: 'WiFi Connected!',
+                                text: 'Your device is now connected to the network.',
+                                icon: 'success'
+                            });
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Payment failed. Please try again.',
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function() {
                     Swal.fire({
-                        title: 'WiFi Connected!',
-                        text: 'Your device is now connected to the network.',
-                        icon: 'success'
+                        title: 'Error',
+                        text: 'An error occurred. Please try again.',
+                        icon: 'error'
                     });
-                });
-            }, 2000);
+                }
+            });
         });
     </script>
 </body>
