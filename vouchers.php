@@ -42,6 +42,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="min-h-screen bg-gray-50">
+    <!-- Fixed overlay for the modal -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
     <div class="container mx-auto py-8">
         <div class="text-center mb-12">
             <h1 class="text-4xl font-bold text-blue-600 mb-4">GCash Vouchers</h1>
@@ -69,7 +72,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endforeach; ?>
         </div>
 
-        <div id="paymentForm" class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg hidden">
+        <!-- Floating modal payment form -->
+        <div id="paymentForm" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-md w-full bg-white p-6 rounded-lg shadow-xl hidden z-50">
+            <button onclick="closePaymentForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
             <h2 class="text-2xl font-bold mb-6 text-center">Complete Your Purchase</h2>
             <form id="purchaseForm" class="space-y-6">
                 <input type="hidden" id="selectedVoucherId" name="voucherId">
@@ -100,9 +109,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $('#selectedPrice').val(price);
             $('#paymentAmount').text(price);
             $('#paymentForm').removeClass('hidden');
-            $('html, body').animate({
-                scrollTop: $("#paymentForm").offset().top - 100
-            }, 500);
+            $('#modalOverlay').removeClass('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+        }
+
+        function closePaymentForm() {
+            $('#paymentForm').addClass('hidden');
+            $('#modalOverlay').addClass('hidden');
+            document.body.style.overflow = ''; // Restore scrolling
         }
 
         $('#purchaseForm').on('submit', function(e) {
@@ -138,6 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 success: function(response) {
                     const result = JSON.parse(response);
                     if (result.success) {
+                        closePaymentForm();
                         Swal.fire({
                             title: 'Payment successful!',
                             text: 'Your voucher has been activated and your device is now connected.',
@@ -165,6 +180,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     });
                 }
             });
+        });
+
+        // Close modal when clicking outside
+        $('#modalOverlay').click(function() {
+            closePaymentForm();
+        });
+
+        // Prevent modal from closing when clicking inside the form
+        $('#paymentForm').click(function(e) {
+            e.stopPropagation();
+        });
+
+        // Close modal when pressing ESC key
+        $(document).keydown(function(e) {
+            if (e.key === "Escape") {
+                closePaymentForm();
+            }
         });
     </script>
 </body>
