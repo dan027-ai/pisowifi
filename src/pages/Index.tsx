@@ -5,11 +5,11 @@ import { useToast } from "@/components/ui/use-toast";
 import type { Voucher, PaymentFormData } from "@/types/voucher";
 
 const VOUCHERS: Voucher[] = [
-  { id: 1, price: 5, duration: "3 hours", description: "Perfect for quick sessions" },
-  { id: 2, price: 10, duration: "8 hours", description: "Great for all-day use" },
-  { id: 3, price: 15, duration: "1 day", description: "24 hours of unlimited access" },
-  { id: 4, price: 25, duration: "2 days", description: "Weekend package" },
-  { id: 5, price: 50, duration: "5 days", description: "Best value for longer periods" },
+  { id: 1, price: 5, duration: "3 hours", description: "Perfect for quick sessions", created_at: new Date().toISOString() },
+  { id: 2, price: 10, duration: "8 hours", description: "Great for all-day use", created_at: new Date().toISOString() },
+  { id: 3, price: 15, duration: "1 day", description: "24 hours of unlimited access", created_at: new Date().toISOString() },
+  { id: 4, price: 25, duration: "2 days", description: "Weekend package", created_at: new Date().toISOString() },
+  { id: 5, price: 50, duration: "5 days", description: "Best value for longer periods", created_at: new Date().toISOString() },
 ];
 
 export default function Index() {
@@ -80,6 +80,7 @@ export default function Index() {
               voucher={voucher}
               onSelect={setSelectedVoucher}
               isSelected={selectedVoucher?.id === voucher.id}
+              paymentMethod="gcash"
             />
           ))}
         </div>
@@ -92,6 +93,7 @@ export default function Index() {
             <PaymentForm
               selectedPrice={selectedVoucher.price}
               onSubmit={handlePaymentSubmit}
+              paymentMethod="gcash"
             />
           </div>
         )}

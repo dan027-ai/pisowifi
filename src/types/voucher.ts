@@ -3,7 +3,7 @@ export interface Voucher {
   price: number;
   duration: string;
   description: string | null;
-  created_at: string;
+  created_at?: string;
 }
 
 export interface Transaction {
@@ -18,3 +18,9 @@ export interface Transaction {
 }
 
 export type PaymentMethod = 'gcash' | 'paymaya';
+
+export interface PaymentFormData {
+  phoneNumber: string;
+  email: string;
+  selectedVoucher?: number;
+}
