@@ -14,7 +14,7 @@ const VOUCHERS: Voucher[] = [
   { id: 5, price: 50, duration: "5 days", description: "Best value for longer periods" },
 ];
 
-const Index = () => {
+export default function Index() {
   const navigate = useNavigate();
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -58,7 +58,6 @@ const Index = () => {
           expiryTime: result.expiryTime,
         };
 
-        // Use React Router navigation instead of window.location
         navigate("/voucher-timer", { state: { voucherData } });
       } else {
         throw new Error(result.error || 'Payment failed');
@@ -115,6 +114,4 @@ const Index = () => {
       </div>
     </div>
   );
-};
-
-export default Index;
+}
