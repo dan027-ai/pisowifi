@@ -35,8 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Simulate a short processing delay (2 seconds)
     sleep(2);
 
-    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
+    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method, expiry_time) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("issdss", $voucher_id, $phone_number, $email, $amount, $payment_method, $expiry_time);
     
     if ($stmt->execute()) {
         echo json_encode([
@@ -203,6 +203,13 @@ require_once 'components/VoucherGrid.php';
                                 icon: 'success'
                             });
                         });
+                        // Navigate to timer page with voucher data
+                        const voucherData = {
+                            duration: result.duration,
+                            amount: result.amount,
+                            expiryTime: result.expiryTime,
+                        };
+                        window.location.href = "voucher-timer.php?data=" + encodeURIComponent(JSON.stringify(voucherData));
                     } else {
                         processingModal.close();
                         Swal.fire({
@@ -242,4 +249,3 @@ require_once 'components/VoucherGrid.php';
     </script>
 </body>
 </html>
-?>

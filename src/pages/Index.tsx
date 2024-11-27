@@ -22,7 +22,6 @@ const Index = () => {
   const { toast } = useToast();
 
   const activateVoucher = (voucherId: number) => {
-    // Simulate voucher activation without API call
     toast({
       title: "WiFi Connected!",
       description: "Your device is now connected to the network.",
@@ -43,44 +42,47 @@ const Index = () => {
       if (selectedVoucher) {
         activateVoucher(selectedVoucher.id);
         
-        // Calculate expiry time based on voucher duration
-        const now = new Date();
-        let hoursToAdd = 3; // default
-        
-        switch(selectedVoucher.duration) {
-          case "3 hours":
-            hoursToAdd = 3;
-            break;
-          case "8 hours":
-            hoursToAdd = 8;
-            break;
-          case "1 day":
-            hoursToAdd = 24;
-            break;
-          case "2 days":
-            hoursToAdd = 48;
-            break;
-          case "5 days":
-            hoursToAdd = 120;
-            break;
-        }
-        
-        const expiryTime = new Date(now.getTime() + hoursToAdd * 60 * 60 * 1000);
-        
-        // Create voucher data for timer page
-        const voucherData = {
-          duration: selectedVoucher.duration,
-          amount: selectedVoucher.price,
-          expiryTime: expiryTime.toISOString(),
-        };
+        // Make the actual API call to process payment
+        fetch('vouchers.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            voucherId: selectedVoucher.id.toString(),
+            phoneNumber: data.phoneNumber,
+            email: data.email,
+            price: selectedVoucher.price.toString(),
+            paymentMethod: 'gcash'
+          })
+        })
+        .then(response => response.json())
+        .then(result => {
+          if (result.success) {
+            const voucherData = {
+              duration: selectedVoucher.duration,
+              amount: result.amount,
+              expiryTime: result.expiryTime,
+            };
 
-        // Navigate to timer page with voucher data
-        navigate("/voucher-timer", { state: { voucherData } });
+            // Navigate to timer page with voucher data
+            navigate("/voucher-timer", { state: { voucherData } });
+          } else {
+            throw new Error(result.error || 'Payment failed');
+          }
+        })
+        .catch(error => {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        });
       }
 
       toast({
         title: "Payment successful!",
-        description: "Your voucher has been activated and your device is now connected.",
+        description: "Your voucher has been activated.",
       });
     }, 2000);
   };
