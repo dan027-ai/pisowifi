@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import VoucherCard from "@/components/VoucherCard";
 import PaymentForm from "@/components/PaymentForm";
 import ReceiptModal from "@/components/ReceiptModal";
@@ -14,6 +15,7 @@ const VOUCHERS: Voucher[] = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
   const [paymentData, setPaymentData] = useState<PaymentFormData | undefined>();
@@ -38,9 +40,42 @@ const Index = () => {
       setPaymentData(data);
       setShowReceipt(true);
       
-      // After successful payment, automatically activate the voucher
       if (selectedVoucher) {
         activateVoucher(selectedVoucher.id);
+        
+        // Calculate expiry time based on voucher duration
+        const now = new Date();
+        let hoursToAdd = 3; // default
+        
+        switch(selectedVoucher.duration) {
+          case "3 hours":
+            hoursToAdd = 3;
+            break;
+          case "8 hours":
+            hoursToAdd = 8;
+            break;
+          case "1 day":
+            hoursToAdd = 24;
+            break;
+          case "2 days":
+            hoursToAdd = 48;
+            break;
+          case "5 days":
+            hoursToAdd = 120;
+            break;
+        }
+        
+        const expiryTime = new Date(now.getTime() + hoursToAdd * 60 * 60 * 1000);
+        
+        // Create voucher data for timer page
+        const voucherData = {
+          duration: selectedVoucher.duration,
+          amount: selectedVoucher.price,
+          expiryTime: expiryTime.toISOString(),
+        };
+
+        // Navigate to timer page with voucher data
+        navigate("/voucher-timer", { state: { voucherData } });
       }
 
       toast({
