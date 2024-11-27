@@ -18,73 +18,58 @@ const Index = () => {
   const navigate = useNavigate();
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
-  const [paymentData, setPaymentData] = useState<PaymentFormData | undefined>();
+  const [paymentData, setPaymentData] = useState<PaymentFormData>();
   const { toast } = useToast();
 
-  const activateVoucher = (voucherId: number) => {
-    toast({
-      title: "WiFi Connected!",
-      description: "Your device is now connected to the network.",
-    });
-  };
+  const handlePaymentSubmit = async (data: PaymentFormData) => {
+    if (!selectedVoucher) return;
 
-  const handlePaymentSubmit = (data: PaymentFormData) => {
     toast({
       title: "Processing payment...",
       description: "Please wait while we process your payment.",
     });
 
-    // Simulate payment processing
-    setTimeout(() => {
-      setPaymentData(data);
-      setShowReceipt(true);
-      
-      if (selectedVoucher) {
-        activateVoucher(selectedVoucher.id);
-        
-        // Make the actual API call to process payment
-        fetch('vouchers.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            voucherId: selectedVoucher.id.toString(),
-            phoneNumber: data.phoneNumber,
-            email: data.email,
-            price: selectedVoucher.price.toString(),
-            paymentMethod: 'gcash'
-          })
+    try {
+      const response = await fetch('vouchers.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          voucherId: selectedVoucher.id.toString(),
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+          price: selectedVoucher.price.toString(),
+          paymentMethod: 'gcash'
         })
-        .then(response => response.json())
-        .then(result => {
-          if (result.success) {
-            const voucherData = {
-              duration: selectedVoucher.duration,
-              amount: result.amount,
-              expiryTime: result.expiryTime,
-            };
-
-            // Navigate to timer page with voucher data
-            navigate("/voucher-timer", { state: { voucherData } });
-          } else {
-            throw new Error(result.error || 'Payment failed');
-          }
-        })
-        .catch(error => {
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        });
-      }
-
-      toast({
-        title: "Payment successful!",
-        description: "Your voucher has been activated.",
       });
-    }, 2000);
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Payment successful!",
+          description: "Your voucher has been activated.",
+        });
+
+        const voucherData = {
+          duration: selectedVoucher.duration,
+          amount: result.amount,
+          expiryTime: result.expiryTime,
+        };
+
+        // Use React Router navigation instead of window.location
+        navigate("/voucher-timer", { state: { voucherData } });
+      } else {
+        throw new Error(result.error || 'Payment failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: "destructive",
+      });
+    }
   };
 
   return (
