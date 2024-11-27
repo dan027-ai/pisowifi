@@ -10,15 +10,19 @@ if ($conn->connect_error) {
 $result = $conn->query("SELECT * FROM vouchers");
 $vouchers = $result->fetch_all(MYSQLI_ASSOC);
 
+// Get payment method from URL parameter, default to GCash
+$paymentMethod = isset($_GET['method']) ? $_GET['method'] : 'gcash';
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $voucher_id = $_POST['voucherId'];
     $phone_number = $_POST['phoneNumber'];
     $email = $_POST['email'];
     $amount = $_POST['price'];
+    $payment_method = $_POST['paymentMethod'];
 
-    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("issd", $voucher_id, $phone_number, $email, $amount);
+    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
     
     if ($stmt->execute()) {
         echo json_encode(["success" => true]);
@@ -29,6 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     exit;
 }
+
+// Include components
+require_once 'components/PaymentHeader.php';
+require_once 'components/PaymentMethods.php';
+require_once 'components/VoucherGrid.php';
 ?>
 
 <!DOCTYPE html>
@@ -36,41 +45,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCash Vouchers</title>
+    <title><?php echo ucfirst($paymentMethod); ?> Vouchers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gcash: {
+                            blue: '#00ABE7',
+                            secondary: '#0075C4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="min-h-screen bg-gray-50">
     <!-- Fixed overlay for the modal -->
     <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
 
     <div class="container mx-auto py-8">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-blue-600 mb-4">GCash Vouchers</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto">
-                Purchase vouchers quickly and securely using GCash. Select your preferred duration below.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <?php foreach ($vouchers as $voucher): ?>
-            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <div class="flex flex-col space-y-4">
-                    <div class="text-2xl font-bold text-blue-600">
-                        ₱<?php echo $voucher['price']; ?>
-                    </div>
-                    <div class="text-lg font-medium"><?php echo $voucher['duration']; ?></div>
-                    <div class="text-sm text-gray-600"><?php echo $voucher['description']; ?></div>
-                    <button 
-                        onclick="selectVoucher(<?php echo $voucher['id']; ?>, <?php echo $voucher['price']; ?>)"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors">
-                        Select
-                    </button>
-                </div>
-            </div>
-            <?php endforeach; ?>
-        </div>
+        <?php 
+        renderHeader(
+            ucfirst($paymentMethod) . " Vouchers",
+            "Purchase vouchers quickly and securely using " . ucfirst($paymentMethod) . ". Select your preferred duration below."
+        );
+        
+        renderPaymentMethods($paymentMethod);
+        
+        renderVoucherGrid($vouchers, $paymentMethod);
+        ?>
 
         <!-- Floating modal payment form -->
         <div id="paymentForm" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-md w-full bg-white p-6 rounded-lg shadow-xl hidden z-50">
@@ -83,9 +91,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <form id="purchaseForm" class="space-y-6">
                 <input type="hidden" id="selectedVoucherId" name="voucherId">
                 <input type="hidden" id="selectedPrice" name="price">
+                <input type="hidden" id="paymentMethod" name="paymentMethod" value="<?php echo $paymentMethod; ?>">
                 
                 <div class="space-y-2">
-                    <label class="block text-gray-700">GCash Phone Number</label>
+                    <label class="block text-gray-700"><?php echo ucfirst($paymentMethod); ?> Phone Number</label>
                     <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="09XX XXX XXXX" 
                         class="w-full border border-gray-300 rounded px-3 py-2">
                 </div>
@@ -96,7 +105,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         class="w-full border border-gray-300 rounded px-3 py-2">
                 </div>
 
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                <button type="submit" 
+                    class="w-full <?php echo $paymentMethod === 'gcash' ? 'bg-gcash-blue hover:bg-gcash-secondary' : 'bg-[#1C4091] hover:bg-[#15336D]'; ?> text-white py-2 px-4 rounded">
                     Pay ₱<span id="paymentAmount">0</span>
                 </button>
             </form>
