@@ -57,6 +57,10 @@ require_once 'components/VoucherGrid.php';
                         gcash: {
                             blue: '#00ABE7',
                             secondary: '#0075C4'
+                        },
+                        paymaya: {
+                            green: '#1C8C37',
+                            secondary: '#156E2B'
                         }
                     }
                 }
@@ -106,7 +110,7 @@ require_once 'components/VoucherGrid.php';
                 </div>
 
                 <button type="submit" 
-                    class="w-full <?php echo $paymentMethod === 'gcash' ? 'bg-gcash-blue hover:bg-gcash-secondary' : 'bg-[#1C4091] hover:bg-[#15336D]'; ?> text-white py-2 px-4 rounded">
+                    class="w-full <?php echo $paymentMethod === 'gcash' ? 'bg-gcash-blue hover:bg-gcash-secondary' : 'bg-paymaya-green hover:bg-paymaya-secondary'; ?> text-white py-2 px-4 rounded">
                     Pay ₱<span id="paymentAmount">0</span>
                 </button>
             </form>
