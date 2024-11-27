@@ -24,6 +24,10 @@ export default {
           secondary: "#0075C4",
           accent: "#FFB800",
         },
+        paymaya: {
+          green: "#1C8C37",
+          secondary: "#156E2B"
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

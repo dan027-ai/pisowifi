@@ -8,7 +8,7 @@ function renderPaymentMethods($selectedMethod) {
             <span class="font-medium">GCash</span>
         </a>
         <a href="?method=paymaya" 
-           class="flex items-center gap-2 px-6 py-3 rounded-lg <?php echo $selectedMethod === 'paymaya' ? 'bg-[#1C4091] text-white' : 'bg-white border border-gray-200'; ?>">
+           class="flex items-center gap-2 px-6 py-3 rounded-lg <?php echo $selectedMethod === 'paymaya' ? 'bg-paymaya-green text-white' : 'bg-white border border-gray-200'; ?>">
             <img src="assets/paymaya-logo.png" alt="PayMaya" class="h-8">
             <span class="font-medium">PayMaya</span>
         </a>
