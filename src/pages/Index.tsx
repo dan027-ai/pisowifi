@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import VoucherCard from "@/components/VoucherCard";
 import PaymentForm from "@/components/PaymentForm";
-import ReceiptModal from "@/components/ReceiptModal";
 import { useToast } from "@/components/ui/use-toast";
 import type { Voucher, PaymentFormData } from "@/types/voucher";
 
@@ -17,8 +16,6 @@ const VOUCHERS: Voucher[] = [
 export default function Index() {
   const navigate = useNavigate();
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [paymentData, setPaymentData] = useState<PaymentFormData>();
   const { toast } = useToast();
 
   const handlePaymentSubmit = async (data: PaymentFormData) => {
@@ -30,18 +27,20 @@ export default function Index() {
     });
 
     try {
+      const formData = new URLSearchParams({
+        voucherId: selectedVoucher.id.toString(),
+        phoneNumber: data.phoneNumber,
+        email: data.email,
+        price: selectedVoucher.price.toString(),
+        paymentMethod: 'gcash'
+      });
+
       const response = await fetch('vouchers.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({
-          voucherId: selectedVoucher.id.toString(),
-          phoneNumber: data.phoneNumber,
-          email: data.email,
-          price: selectedVoucher.price.toString(),
-          paymentMethod: 'gcash'
-        })
+        body: formData
       });
 
       const result = await response.json();
@@ -105,12 +104,6 @@ export default function Index() {
             />
           </div>
         )}
-
-        <ReceiptModal
-          isOpen={showReceipt}
-          onClose={() => setShowReceipt(false)}
-          paymentData={paymentData}
-        />
       </div>
     </div>
   );
