@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import VoucherCard from "@/components/VoucherCard";
 import PaymentForm from "@/components/PaymentForm";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,7 +13,6 @@ const VOUCHERS: Voucher[] = [
 ];
 
 export default function Index() {
-  const navigate = useNavigate();
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const { toast } = useToast();
 
@@ -48,16 +46,9 @@ export default function Index() {
       if (result.success) {
         toast({
           title: "Payment successful!",
-          description: "Your voucher has been activated.",
+          description: "Your voucher has been activated. You can now connect to the WiFi network.",
         });
-
-        const voucherData = {
-          duration: selectedVoucher.duration,
-          amount: result.amount,
-          expiryTime: result.expiryTime,
-        };
-
-        navigate("/voucher-timer", { state: { voucherData } });
+        setSelectedVoucher(null);
       } else {
         throw new Error(result.error || 'Payment failed');
       }
