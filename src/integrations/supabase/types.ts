@@ -9,7 +9,71 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          email: string
+          id: number
+          payment_method: string
+          phone_number: string
+          status: string | null
+          voucher_id: number | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          email: string
+          id?: number
+          payment_method: string
+          phone_number: string
+          status?: string | null
+          voucher_id?: number | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          email?: string
+          id?: number
+          payment_method?: string
+          phone_number?: string
+          status?: string | null
+          voucher_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vouchers: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: string
+          id: number
+          price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration: string
+          id?: number
+          price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: string
+          id?: number
+          price?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

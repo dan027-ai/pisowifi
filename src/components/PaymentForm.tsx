@@ -3,14 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import type { PaymentFormData } from "@/types/voucher";
+import type { PaymentMethod } from "@/types/voucher";
 
 interface PaymentFormProps {
   selectedPrice: number;
-  onSubmit: (data: PaymentFormData) => void;
+  onSubmit: (data: { phoneNumber: string; email: string }) => void;
+  paymentMethod: PaymentMethod;
 }
 
-const PaymentForm = ({ selectedPrice, onSubmit }: PaymentFormProps) => {
+const PaymentForm = ({ selectedPrice, onSubmit, paymentMethod }: PaymentFormProps) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const { toast } = useToast();
@@ -30,14 +31,16 @@ const PaymentForm = ({ selectedPrice, onSubmit }: PaymentFormProps) => {
     onSubmit({
       phoneNumber,
       email,
-      selectedVoucher: selectedPrice,
     });
   };
+
+  const bgColorClass = paymentMethod === 'gcash' ? 'bg-gcash-blue' : 'bg-paymaya-green';
+  const hoverColorClass = paymentMethod === 'gcash' ? 'hover:bg-gcash-secondary' : 'hover:bg-paymaya-secondary';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="phone">GCash Phone Number</Label>
+        <Label htmlFor="phone">{paymentMethod === 'gcash' ? 'GCash' : 'PayMaya'} Phone Number</Label>
         <Input
           id="phone"
           type="tel"
@@ -62,7 +65,7 @@ const PaymentForm = ({ selectedPrice, onSubmit }: PaymentFormProps) => {
 
       <Button
         type="submit"
-        className="w-full bg-gcash-blue hover:bg-gcash-secondary"
+        className={`w-full ${bgColorClass} ${hoverColorClass}`}
       >
         Pay ₱{selectedPrice}
       </Button>
