@@ -21,6 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $amount = $_POST['price'];
     $payment_method = $_POST['paymentMethod'];
 
+    // Simulate a short processing delay (2 seconds)
+    sleep(2);
+
     $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
     
@@ -124,13 +127,14 @@ require_once 'components/VoucherGrid.php';
             $('#paymentAmount').text(price);
             $('#paymentForm').removeClass('hidden');
             $('#modalOverlay').removeClass('hidden');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+            document.body.style.overflow = 'hidden';
         }
 
         function closePaymentForm() {
             $('#paymentForm').addClass('hidden');
             $('#modalOverlay').addClass('hidden');
-            document.body.style.overflow = ''; // Restore scrolling
+            document.body.style.overflow = '';
+            Swal.close(); // Close any open Swal modals
         }
 
         $('#purchaseForm').on('submit', function(e) {
@@ -140,7 +144,8 @@ require_once 'components/VoucherGrid.php';
                 voucherId: $('#selectedVoucherId').val(),
                 phoneNumber: $('#phoneNumber').val(),
                 email: $('#email').val(),
-                price: $('#selectedPrice').val()
+                price: $('#selectedPrice').val(),
+                paymentMethod: $('#paymentMethod').val()
             };
             
             if (!formData.phoneNumber || !formData.email) {
@@ -152,11 +157,13 @@ require_once 'components/VoucherGrid.php';
                 return;
             }
 
-            Swal.fire({
+            // Show processing payment modal
+            const processingModal = Swal.fire({
                 title: 'Processing payment...',
                 text: 'Please wait while we process your payment.',
                 icon: 'info',
-                showConfirmButton: false
+                showConfirmButton: false,
+                allowOutsideClick: false
             });
 
             $.ajax({
@@ -166,11 +173,13 @@ require_once 'components/VoucherGrid.php';
                 success: function(response) {
                     const result = JSON.parse(response);
                     if (result.success) {
+                        processingModal.close();
                         closePaymentForm();
                         Swal.fire({
                             title: 'Payment successful!',
-                            text: 'Your voucher has been activated and your device is now connected.',
-                            icon: 'success'
+                            text: 'Your voucher has been activated.',
+                            icon: 'success',
+                            allowOutsideClick: false
                         }).then(() => {
                             Swal.fire({
                                 title: 'WiFi Connected!',
@@ -179,14 +188,16 @@ require_once 'components/VoucherGrid.php';
                             });
                         });
                     } else {
+                        processingModal.close();
                         Swal.fire({
                             title: 'Error',
-                            text: 'Payment failed. Please try again.',
+                            text: result.error || 'Payment failed. Please try again.',
                             icon: 'error'
                         });
                     }
                 },
                 error: function() {
+                    processingModal.close();
                     Swal.fire({
                         title: 'Error',
                         text: 'An error occurred. Please try again.',
