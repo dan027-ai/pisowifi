@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'config/database.php';
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
@@ -7,12 +8,8 @@ if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
     exit;
 }
 
-// Database connection
-$conn = new mysqli("localhost", "root", "", "piso_wifi");
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Get database connection
+$conn = getDBConnection();
 
 // Handle voucher deletion
 if (isset($_POST['delete_voucher'])) {

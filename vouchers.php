@@ -1,10 +1,8 @@
 <?php
-// Database connection
-$conn = new mysqli("localhost", "root", "", "piso_wifi");
+require_once 'config/database.php';
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Get database connection
+$conn = getDBConnection();
 
 // Fetch vouchers from database
 $result = $conn->query("SELECT * FROM vouchers");
@@ -52,7 +50,6 @@ require_once 'components/VoucherGrid.php';
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -119,7 +116,7 @@ require_once 'components/VoucherGrid.php';
             </form>
         </div>
     </div>
-
+    
     <script>
         function selectVoucher(id, price) {
             $('#selectedVoucherId').val(id);
