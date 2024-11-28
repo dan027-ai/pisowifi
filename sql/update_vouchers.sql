@@ -1,0 +1,4 @@
+ALTER TABLE vouchers 
+ADD COLUMN quantity_limit INT NULL,
+ADD COLUMN is_promo TINYINT(1) DEFAULT 0,
+ADD COLUMN promo_end_time DATETIME NULL;

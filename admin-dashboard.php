@@ -30,8 +30,8 @@ if (isset($_POST['save_voucher'])) {
     $duration = $_POST['duration'];
     $description = $_POST['description'];
     $is_promo = isset($_POST['is_promo']) ? 1 : 0;
-    $promo_end_time = $_POST['promo_end_time'] ?? null;
-    $quantity_limit = $_POST['quantity_limit'] ? (int)$_POST['quantity_limit'] : null;
+    $promo_end_time = !empty($_POST['promo_end_time']) ? $_POST['promo_end_time'] : null;
+    $quantity_limit = !empty($_POST['quantity_limit']) ? (int)$_POST['quantity_limit'] : null;
     
     if (isset($_POST['voucher_id']) && !empty($_POST['voucher_id'])) {
         // Update existing voucher
