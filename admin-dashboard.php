@@ -14,7 +14,10 @@ $conn = getDBConnection();
 // Handle voucher deletion
 if (isset($_POST['delete_voucher'])) {
     $id = $_POST['voucher_id'];
-    $conn->query("DELETE FROM vouchers WHERE id = $id");
+    $stmt = $conn->prepare("DELETE FROM vouchers WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
 }
 
 // Handle voucher addition/update
@@ -23,7 +26,7 @@ if (isset($_POST['save_voucher'])) {
     $duration = $_POST['duration'];
     $description = $_POST['description'];
     
-    if (isset($_POST['voucher_id'])) {
+    if (isset($_POST['voucher_id']) && !empty($_POST['voucher_id'])) {
         // Update existing voucher
         $id = $_POST['voucher_id'];
         $stmt = $conn->prepare("UPDATE vouchers SET price = ?, duration = ?, description = ? WHERE id = ?");
@@ -55,40 +58,37 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="min-h-screen bg-gray-50">
     <div class="container mx-auto py-8 px-4">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-blue-600">Admin Dashboard</h1>
-            <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                Logout
-            </a>
+            <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
         </div>
 
         <!-- Add/Edit Voucher Form -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 class="text-xl font-bold mb-4">Add New Voucher</h2>
+            <h2 class="text-xl font-bold mb-4">Add/Edit Voucher</h2>
             <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <input type="hidden" name="voucher_id" id="edit_voucher_id">
                 <div>
                     <label class="block text-gray-700 mb-2">Price (₱)</label>
                     <input type="number" name="price" step="0.01" required 
-                        class="w-full border border-gray-300 rounded px-3 py-2">
+                           class="w-full border border-gray-300 rounded px-3 py-2">
                 </div>
                 <div>
                     <label class="block text-gray-700 mb-2">Duration</label>
                     <input type="text" name="duration" required 
-                        class="w-full border border-gray-300 rounded px-3 py-2">
+                           class="w-full border border-gray-300 rounded px-3 py-2">
                 </div>
                 <div>
                     <label class="block text-gray-700 mb-2">Description</label>
                     <input type="text" name="description" required 
-                        class="w-full border border-gray-300 rounded px-3 py-2">
+                           class="w-full border border-gray-300 rounded px-3 py-2">
                 </div>
                 <div class="md:col-span-3">
                     <button type="submit" name="save_voucher" 
-                        class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                         Save Voucher
                     </button>
                 </div>
@@ -115,13 +115,13 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
                             <td class="px-4 py-2"><?php echo $voucher['duration']; ?></td>
                             <td class="px-4 py-2"><?php echo $voucher['description']; ?></td>
                             <td class="px-4 py-2">
+                                <button onclick='editVoucher(<?php echo json_encode($voucher); ?>)'
+                                        class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
                                 <form method="POST" class="inline">
                                     <input type="hidden" name="voucher_id" value="<?php echo $voucher['id']; ?>">
                                     <button type="submit" name="delete_voucher" 
-                                        class="text-red-600 hover:text-red-800 mr-2">Delete</button>
+                                            class="text-red-600 hover:text-red-800">Delete</button>
                                 </form>
-                                <button onclick="editVoucher(<?php echo htmlspecialchars(json_encode($voucher)); ?>)"
-                                    class="text-blue-600 hover:text-blue-800">Edit</button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -161,13 +161,13 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
     </div>
 
     <script>
-        function editVoucher(voucher) {
-            document.querySelector('[name="voucher_id"]').value = voucher.id;
-            document.querySelector('[name="price"]').value = voucher.price;
-            document.querySelector('[name="duration"]').value = voucher.duration;
-            document.querySelector('[name="description"]').value = voucher.description;
-            document.querySelector('[name="save_voucher"]').textContent = 'Update Voucher';
-        }
+    function editVoucher(voucher) {
+        document.querySelector('[name="voucher_id"]').value = voucher.id;
+        document.querySelector('[name="price"]').value = voucher.price;
+        document.querySelector('[name="duration"]').value = voucher.duration;
+        document.querySelector('[name="description"]').value = voucher.description;
+        document.querySelector('[name="save_voucher"]').textContent = 'Update Voucher';
+    }
     </script>
 </body>
 </html>
