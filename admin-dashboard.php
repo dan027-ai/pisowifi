@@ -1,6 +1,11 @@
 <?php
 session_start();
 require_once 'config/database.php';
+require_once 'components/admin/Header.php';
+require_once 'components/admin/VoucherForm.php';
+require_once 'components/admin/VouchersTable.php';
+require_once 'components/admin/TransactionsTable.php';
+require_once 'components/admin/TotalSales.php';
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
@@ -11,7 +16,7 @@ if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
 // Get database connection
 $conn = getDBConnection();
 
-// Handle voucher deletion
+// Handle voucher operations
 if (isset($_POST['delete_voucher'])) {
     $id = $_POST['voucher_id'];
     $stmt = $conn->prepare("DELETE FROM vouchers WHERE id = ?");
@@ -20,7 +25,6 @@ if (isset($_POST['delete_voucher'])) {
     $stmt->close();
 }
 
-// Handle voucher addition/update
 if (isset($_POST['save_voucher'])) {
     $price = $_POST['price'];
     $duration = $_POST['duration'];
@@ -44,11 +48,10 @@ if (isset($_POST['save_voucher'])) {
     $stmt->close();
 }
 
-// Fetch all vouchers
+// Fetch data
 $result = $conn->query("SELECT * FROM vouchers ORDER BY price ASC");
 $vouchers = $result->fetch_all(MYSQLI_ASSOC);
 
-// Fetch recent transactions
 $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t 
                             JOIN vouchers v ON t.voucher_id = v.id 
                             ORDER BY t.created_at DESC LIMIT 10");
@@ -64,140 +67,13 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
 </head>
 <body class="min-h-screen bg-gray-50">
     <div class="container mx-auto py-8 px-4">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-blue-600">Admin Dashboard</h1>
-            <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
-        </div>
-
-        <!-- Add/Edit Voucher Form -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 class="text-xl font-bold mb-4">Add/Edit Voucher</h2>
-            <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="hidden" name="voucher_id" id="edit_voucher_id">
-                <div>
-                    <label class="block text-gray-700 mb-2">Price (₱)</label>
-                    <input type="number" name="price" step="0.01" required 
-                           class="w-full border border-gray-300 rounded px-3 py-2">
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-2">Duration</label>
-                    <input type="text" name="duration" required 
-                           class="w-full border border-gray-300 rounded px-3 py-2">
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-2">Description</label>
-                    <input type="text" name="description" required 
-                           class="w-full border border-gray-300 rounded px-3 py-2">
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-2">Promo Settings</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" name="is_promo" class="mr-2">
-                            Is Promotional Voucher
-                        </label>
-                        <input type="datetime-local" name="promo_end_time" 
-                               class="w-full border border-gray-300 rounded px-3 py-2"
-                               placeholder="Promo End Time">
-                        <input type="number" name="quantity_limit" 
-                               class="w-full border border-gray-300 rounded px-3 py-2"
-                               placeholder="Quantity Limit (optional)">
-                    </div>
-                </div>
-                <div class="md:col-span-2">
-                    <button type="submit" name="save_voucher" 
-                            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                        Save Voucher
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Vouchers Table -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 class="text-xl font-bold mb-4">Current Vouchers</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-gray-50">
-                            <th class="px-4 py-2 text-left">Price</th>
-                            <th class="px-4 py-2 text-left">Duration</th>
-                            <th class="px-4 py-2 text-left">Description</th>
-                            <th class="px-4 py-2 text-left">Promo Status</th>
-                            <th class="px-4 py-2 text-left">Remaining/Limit</th>
-                            <th class="px-4 py-2 text-left">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($vouchers as $voucher): ?>
-                        <tr class="border-t">
-                            <td class="px-4 py-2">₱<?php echo $voucher['price']; ?></td>
-                            <td class="px-4 py-2"><?php echo $voucher['duration']; ?></td>
-                            <td class="px-4 py-2"><?php echo $voucher['description']; ?></td>
-                            <td class="px-4 py-2">
-                                <?php if ($voucher['is_promo']): ?>
-                                    <span class="text-green-600">Active Promo</span>
-                                    <?php if ($voucher['promo_end_time']): ?>
-                                        <br>
-                                        <span class="text-sm text-gray-500">
-                                            Until: <?php echo date('Y-m-d H:i', strtotime($voucher['promo_end_time'])); ?>
-                                        </span>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <span class="text-gray-500">Regular</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="px-4 py-2">
-                                <?php if ($voucher['quantity_limit']): ?>
-                                    <?php echo $voucher['remaining_quantity'] ?? 0; ?>/<?php echo $voucher['quantity_limit']; ?>
-                                <?php else: ?>
-                                    Unlimited
-                                <?php endif; ?>
-                            </td>
-                            <td class="px-4 py-2">
-                                <button onclick='editVoucher(<?php echo json_encode($voucher); ?>)'
-                                        class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
-                                <form method="POST" class="inline">
-                                    <input type="hidden" name="voucher_id" value="<?php echo $voucher['id']; ?>">
-                                    <button type="submit" name="delete_voucher" 
-                                            class="text-red-600 hover:text-red-800">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Recent Transactions -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4">Recent Transactions</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-gray-50">
-                            <th class="px-4 py-2 text-left">Date</th>
-                            <th class="px-4 py-2 text-left">Phone Number</th>
-                            <th class="px-4 py-2 text-left">Email</th>
-                            <th class="px-4 py-2 text-left">Amount</th>
-                            <th class="px-4 py-2 text-left">Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($transaction = $transactions->fetch_assoc()): ?>
-                        <tr class="border-t">
-                            <td class="px-4 py-2"><?php echo date('Y-m-d H:i', strtotime($transaction['created_at'])); ?></td>
-                            <td class="px-4 py-2"><?php echo $transaction['phone_number']; ?></td>
-                            <td class="px-4 py-2"><?php echo $transaction['email']; ?></td>
-                            <td class="px-4 py-2">₱<?php echo $transaction['amount']; ?></td>
-                            <td class="px-4 py-2"><?php echo $transaction['duration']; ?></td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <?php 
+        renderAdminHeader();
+        renderVoucherForm();
+        renderVouchersTable($vouchers);
+        renderTotalSales($conn);
+        renderTransactionsTable($transactions);
+        ?>
     </div>
 
     <script>
