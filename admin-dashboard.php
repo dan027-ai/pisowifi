@@ -25,16 +25,19 @@ if (isset($_POST['save_voucher'])) {
     $price = $_POST['price'];
     $duration = $_POST['duration'];
     $description = $_POST['description'];
+    $is_promo = isset($_POST['is_promo']) ? 1 : 0;
+    $promo_end_time = $_POST['promo_end_time'] ?? null;
+    $quantity_limit = $_POST['quantity_limit'] ? (int)$_POST['quantity_limit'] : null;
     
     if (isset($_POST['voucher_id']) && !empty($_POST['voucher_id'])) {
         // Update existing voucher
         $id = $_POST['voucher_id'];
-        $stmt = $conn->prepare("UPDATE vouchers SET price = ?, duration = ?, description = ? WHERE id = ?");
-        $stmt->bind_param("dssi", $price, $duration, $description, $id);
+        $stmt = $conn->prepare("UPDATE vouchers SET price = ?, duration = ?, description = ?, is_promo = ?, promo_end_time = ?, quantity_limit = ? WHERE id = ?");
+        $stmt->bind_param("dssiisi", $price, $duration, $description, $is_promo, $promo_end_time, $quantity_limit, $id);
     } else {
         // Add new voucher
-        $stmt = $conn->prepare("INSERT INTO vouchers (price, duration, description) VALUES (?, ?, ?)");
-        $stmt->bind_param("dss", $price, $duration, $description);
+        $stmt = $conn->prepare("INSERT INTO vouchers (price, duration, description, is_promo, promo_end_time, quantity_limit) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("dssisi", $price, $duration, $description, $is_promo, $promo_end_time, $quantity_limit);
     }
     
     $stmt->execute();
@@ -69,7 +72,7 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
         <!-- Add/Edit Voucher Form -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-8">
             <h2 class="text-xl font-bold mb-4">Add/Edit Voucher</h2>
-            <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="hidden" name="voucher_id" id="edit_voucher_id">
                 <div>
                     <label class="block text-gray-700 mb-2">Price (₱)</label>
@@ -86,7 +89,22 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
                     <input type="text" name="description" required 
                            class="w-full border border-gray-300 rounded px-3 py-2">
                 </div>
-                <div class="md:col-span-3">
+                <div>
+                    <label class="block text-gray-700 mb-2">Promo Settings</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_promo" class="mr-2">
+                            Is Promotional Voucher
+                        </label>
+                        <input type="datetime-local" name="promo_end_time" 
+                               class="w-full border border-gray-300 rounded px-3 py-2"
+                               placeholder="Promo End Time">
+                        <input type="number" name="quantity_limit" 
+                               class="w-full border border-gray-300 rounded px-3 py-2"
+                               placeholder="Quantity Limit (optional)">
+                    </div>
+                </div>
+                <div class="md:col-span-2">
                     <button type="submit" name="save_voucher" 
                             class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                         Save Voucher
@@ -105,6 +123,8 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
                             <th class="px-4 py-2 text-left">Price</th>
                             <th class="px-4 py-2 text-left">Duration</th>
                             <th class="px-4 py-2 text-left">Description</th>
+                            <th class="px-4 py-2 text-left">Promo Status</th>
+                            <th class="px-4 py-2 text-left">Remaining/Limit</th>
                             <th class="px-4 py-2 text-left">Actions</th>
                         </tr>
                     </thead>
@@ -114,6 +134,26 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
                             <td class="px-4 py-2">₱<?php echo $voucher['price']; ?></td>
                             <td class="px-4 py-2"><?php echo $voucher['duration']; ?></td>
                             <td class="px-4 py-2"><?php echo $voucher['description']; ?></td>
+                            <td class="px-4 py-2">
+                                <?php if ($voucher['is_promo']): ?>
+                                    <span class="text-green-600">Active Promo</span>
+                                    <?php if ($voucher['promo_end_time']): ?>
+                                        <br>
+                                        <span class="text-sm text-gray-500">
+                                            Until: <?php echo date('Y-m-d H:i', strtotime($voucher['promo_end_time'])); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <span class="text-gray-500">Regular</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-4 py-2">
+                                <?php if ($voucher['quantity_limit']): ?>
+                                    <?php echo $voucher['remaining_quantity'] ?? 0; ?>/<?php echo $voucher['quantity_limit']; ?>
+                                <?php else: ?>
+                                    Unlimited
+                                <?php endif; ?>
+                            </td>
                             <td class="px-4 py-2">
                                 <button onclick='editVoucher(<?php echo json_encode($voucher); ?>)'
                                         class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
@@ -166,6 +206,14 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
         document.querySelector('[name="price"]').value = voucher.price;
         document.querySelector('[name="duration"]').value = voucher.duration;
         document.querySelector('[name="description"]').value = voucher.description;
+        document.querySelector('[name="is_promo"]').checked = voucher.is_promo == 1;
+        if (voucher.promo_end_time) {
+            document.querySelector('[name="promo_end_time"]').value = 
+                new Date(voucher.promo_end_time).toISOString().slice(0, 16);
+        } else {
+            document.querySelector('[name="promo_end_time"]').value = '';
+        }
+        document.querySelector('[name="quantity_limit"]').value = voucher.quantity_limit || '';
         document.querySelector('[name="save_voucher"]').textContent = 'Update Voucher';
     }
     </script>
