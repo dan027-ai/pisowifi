@@ -13,6 +13,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $amount = $_POST['price'];
     $payment_method = $_POST['paymentMethod'];
+    $otp = $_POST['otp'] ?? '';
+
+    // Verify OTP (in a real application, you would verify against a stored OTP)
+    // For demo purposes, we'll accept any 4-digit OTP
+    if (strlen($otp) !== 4) {
+        echo json_encode(["success" => false, "error" => "Invalid OTP"]);
+        exit;
+    }
 
     // Get voucher duration from database
     $stmt = $conn->prepare("SELECT duration FROM vouchers WHERE id = ?");

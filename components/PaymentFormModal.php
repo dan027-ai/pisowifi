@@ -22,7 +22,21 @@
                 class="w-full border border-gray-300 rounded px-3 py-2">
         </div>
 
-        <button type="submit" 
+        <div id="otpSection" class="hidden space-y-2">
+            <label class="block text-gray-700">Enter OTP</label>
+            <div class="flex justify-center gap-2">
+                <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded" data-otp-input>
+                <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded" data-otp-input>
+                <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded" data-otp-input>
+                <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded" data-otp-input>
+            </div>
+            <p class="text-sm text-gray-500 text-center mt-2">
+                Didn't receive the code? 
+                <button type="button" id="resendOTP" class="text-blue-600 hover:text-blue-800">Resend</button>
+            </p>
+        </div>
+
+        <button type="submit" id="submitButton"
             class="w-full <?php echo $paymentMethod === 'gcash' ? 'bg-gcash-blue hover:bg-gcash-secondary' : 'bg-paymaya-green hover:bg-paymaya-secondary'; ?> text-white py-2 px-4 rounded">
             Pay ₱<span id="paymentAmount">0</span>
         </button>
