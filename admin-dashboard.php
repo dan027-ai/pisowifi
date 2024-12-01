@@ -19,10 +19,30 @@ $conn = getDBConnection();
 // Handle voucher operations
 if (isset($_POST['delete_voucher'])) {
     $id = $_POST['voucher_id'];
-    $stmt = $conn->prepare("DELETE FROM vouchers WHERE id = ?");
+    
+    // First check if there are any transactions using this voucher
+    $checkStmt = $conn->prepare("SELECT COUNT(*) as count FROM transactions WHERE voucher_id = ?");
+    $checkStmt->bind_param("i", $id);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    $count = $result->fetch_assoc()['count'];
+    $checkStmt->close();
+
+    if ($count > 0) {
+        // If there are transactions, just set is_active to 0 instead of deleting
+        $stmt = $conn->prepare("UPDATE vouchers SET is_active = 0 WHERE id = ?");
+    } else {
+        // If no transactions, we can safely delete
+        $stmt = $conn->prepare("DELETE FROM vouchers WHERE id = ?");
+    }
+    
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
+    
+    // Redirect to refresh the page
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 if (isset($_POST['save_voucher'])) {
@@ -32,6 +52,7 @@ if (isset($_POST['save_voucher'])) {
     $is_promo = isset($_POST['is_promo']) ? 1 : 0;
     $promo_end_time = !empty($_POST['promo_end_time']) ? $_POST['promo_end_time'] : null;
     $quantity_limit = !empty($_POST['quantity_limit']) ? (int)$_POST['quantity_limit'] : null;
+    $remaining_quantity = $quantity_limit; // Set initial remaining quantity
     
     if (isset($_POST['voucher_id']) && !empty($_POST['voucher_id'])) {
         // Update existing voucher
@@ -40,16 +61,25 @@ if (isset($_POST['save_voucher'])) {
         $stmt->bind_param("dssiisi", $price, $duration, $description, $is_promo, $promo_end_time, $quantity_limit, $id);
     } else {
         // Add new voucher
-        $stmt = $conn->prepare("INSERT INTO vouchers (price, duration, description, is_promo, promo_end_time, quantity_limit) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("dssisi", $price, $duration, $description, $is_promo, $promo_end_time, $quantity_limit);
+        $stmt = $conn->prepare("INSERT INTO vouchers (price, duration, description, is_promo, promo_end_time, quantity_limit, remaining_quantity, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, 1)");
+        $stmt->bind_param("dssisii", $price, $duration, $description, $is_promo, $promo_end_time, $quantity_limit, $remaining_quantity);
     }
     
     $stmt->execute();
     $stmt->close();
+    
+    // Redirect to refresh the page
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
-// Fetch data
-$result = $conn->query("SELECT * FROM vouchers ORDER BY price ASC");
+// Fetch active vouchers only
+$result = $conn->query("SELECT v.*, 
+    (SELECT COUNT(*) FROM transactions WHERE voucher_id = v.id) as times_used,
+    COALESCE(v.remaining_quantity, v.quantity_limit) as remaining_quantity 
+    FROM vouchers v 
+    WHERE v.is_active = 1 
+    ORDER BY v.price ASC");
 $vouchers = $result->fetch_all(MYSQLI_ASSOC);
 
 $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t 
