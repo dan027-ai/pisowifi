@@ -3,10 +3,19 @@ session_start();
 require_once 'config/database.php';
 
 header('Content-Type: application/json');
+$conn = getDBConnection();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $conn = getDBConnection();
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Handle GET request to fetch vouchers
+    $stmt = $conn->prepare("SELECT * FROM vouchers WHERE is_active = 1");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $vouchers = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
     
+    echo json_encode(['success' => true, 'data' => $vouchers]);
+    
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $voucherId = $_POST['voucherId'];
     $phoneNumber = $_POST['phoneNumber'];
     $email = $_POST['email'];
@@ -53,9 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->rollback();
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
-    
-    $conn->close();
 } else {
     echo json_encode(['success' => false, 'error' => 'Invalid request method']);
 }
+
+$conn->close();
 ?>
