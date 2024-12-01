@@ -1,18 +1,33 @@
 <?php
 session_start();
-require_once 'config/admin.php';
+require_once 'config/database.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
     
-    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
-        $_SESSION['admin_logged_in'] = true;
-        header("Location: admin-dashboard.php");
-        exit;
-    } else {
-        $error = "Invalid credentials";
+    $conn = getDBConnection();
+    
+    // Prepare statement to prevent SQL injection
+    $stmt = $conn->prepare("SELECT * FROM admin_users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        // Verify password - assuming passwords are stored as plain text for now
+        // In production, you should use password_hash() and password_verify()
+        if ($password === $user['password']) {
+            $_SESSION['admin_logged_in'] = true;
+            header("Location: admin-dashboard.php");
+            exit;
+        }
     }
+    
+    $error = "Invalid credentials";
+    $stmt->close();
+    $conn->close();
 }
 ?>
 
