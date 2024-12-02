@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import PaymentHeader from "@/components/PaymentHeader";
 import PaymentMethodSelector from "@/components/PaymentMethodSelector";
 import VoucherCard from "@/components/VoucherCard";
@@ -18,13 +17,12 @@ const Vouchers = () => {
   const { data: vouchers = [], isLoading } = useQuery({
     queryKey: ["vouchers"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vouchers")
-        .select("*")
-        .order("price");
-      
-      if (error) throw error;
-      return data;
+      const response = await fetch("/vouchers.php");
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch vouchers");
+      }
+      return result.data;
     },
   });
 
@@ -35,26 +33,38 @@ const Vouchers = () => {
     if (!selectedVoucher) return;
 
     try {
-      const { error } = await supabase.from("transactions").insert({
-        voucher_id: selectedVoucher.id,
-        phone_number: formData.phoneNumber,
-        email: formData.email,
-        amount: selectedVoucher.price,
-        payment_method: paymentMethod,
+      const response = await fetch("/vouchers.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          voucherId: selectedVoucher.id,
+          phoneNumber: formData.phoneNumber,
+          email: formData.email,
+          price: selectedVoucher.price,
+          paymentMethod: paymentMethod,
+        }),
       });
 
-      if (error) throw error;
-
-      toast({
-        title: "Payment successful!",
-        description: "Your voucher has been activated.",
-      });
-
-      setSelectedVoucher(null);
+      const result = await response.json();
+      if (result.success) {
+        toast({
+          title: "Payment successful!",
+          description: "Your voucher has been activated.",
+        });
+        setSelectedVoucher(null);
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Payment failed. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Payment failed. Please try again.",
+        description: "An error occurred. Please try again.",
         variant: "destructive",
       });
     }
