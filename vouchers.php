@@ -1,60 +1,42 @@
 <?php
-session_start();
 require_once 'config/database.php';
 require_once 'components/PaymentHeader.php';
 require_once 'components/PaymentMethods.php';
 require_once 'components/VoucherGrid.php';
 
-// Set proper headers for JSON response when it's an API request
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST');
-header('Access-Control-Allow-Headers: Content-Type');
-
+// Get database connection
 $conn = getDBConnection();
 
-// Handle API requests
-if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        // Fetch vouchers
-        $stmt = $conn->prepare("SELECT * FROM vouchers WHERE is_active = 1 AND (remaining_quantity > 0 OR remaining_quantity IS NULL)");
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $vouchers = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-        
-        echo json_encode(['success' => true, 'data' => $vouchers]);
-        exit;
-    } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Handle voucher purchase
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        $voucher_id = $data['voucherId'];
-        $phone_number = $data['phoneNumber'];
-        $email = $data['email'];
-        $amount = $data['price'];
-        $payment_method = $data['paymentMethod'];
-
-        $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
-        
-        if ($stmt->execute()) {
-            echo json_encode(["success" => true]);
-        } else {
-            echo json_encode(["success" => false, "error" => $stmt->error]);
-        }
-        
-        $stmt->close();
-        exit;
-    }
-}
-
-// For direct access, render the PHP page
-// Fetch vouchers from database
-$result = $conn->query("SELECT * FROM vouchers");
+// Fetch only active vouchers from database
+$result = $conn->query("SELECT * FROM vouchers WHERE is_active = 1");
 $vouchers = $result->fetch_all(MYSQLI_ASSOC);
 
 // Get payment method from URL parameter, default to GCash
 $paymentMethod = isset($_GET['method']) ? $_GET['method'] : 'gcash';
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $voucher_id = $_POST['voucherId'];
+    $phone_number = $_POST['phoneNumber'];
+    $email = $_POST['email'];
+    $amount = $_POST['price'];
+    $payment_method = $_POST['paymentMethod'];
+
+    // Simulate a short processing delay (2 seconds)
+    sleep(2);
+
+    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
+    
+    if ($stmt->execute()) {
+        echo json_encode(["success" => true]);
+    } else {
+        echo json_encode(["success" => false, "error" => $stmt->error]);
+    }
+    
+    $stmt->close();
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
