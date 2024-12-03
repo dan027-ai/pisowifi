@@ -10,7 +10,7 @@ import type { Voucher, PaymentMethod } from "@/types/voucher";
 
 // Define the API base URL based on environment
 const API_BASE_URL = import.meta.env.DEV 
-  ? 'http://localhost/your-project' // Replace 'your-project' with your XAMPP project folder name
+  ? 'http://localhost/pisowifi' // Updated to match your XAMPP folder name
   : '';
 
 const Vouchers = () => {
