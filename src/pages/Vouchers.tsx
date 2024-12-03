@@ -8,6 +8,11 @@ import VoucherCard from "@/components/VoucherCard";
 import PaymentForm from "@/components/PaymentForm";
 import type { Voucher, PaymentMethod } from "@/types/voucher";
 
+// Define the API base URL based on environment
+const API_BASE_URL = import.meta.env.DEV 
+  ? 'http://localhost/your-project' // Replace 'your-project' with your XAMPP project folder name
+  : '';
+
 const Vouchers = () => {
   const [searchParams] = useSearchParams();
   const paymentMethod = (searchParams.get("method") || "gcash") as PaymentMethod;
@@ -17,7 +22,7 @@ const Vouchers = () => {
   const { data: vouchers = [], isLoading } = useQuery({
     queryKey: ["vouchers"],
     queryFn: async () => {
-      const response = await fetch("/vouchers.php");
+      const response = await fetch(`${API_BASE_URL}/vouchers.php`);
       const result = await response.json();
       if (!result.success) {
         throw new Error(result.error || "Failed to fetch vouchers");
@@ -33,7 +38,7 @@ const Vouchers = () => {
     if (!selectedVoucher) return;
 
     try {
-      const response = await fetch("/vouchers.php", {
+      const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
