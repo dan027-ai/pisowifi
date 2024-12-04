@@ -8,44 +8,28 @@ import VoucherCard from "@/components/VoucherCard";
 import PaymentForm from "@/components/PaymentForm";
 import type { Voucher, PaymentMethod } from "@/types/voucher";
 
-// Define the API base URL to always point to XAMPP htdocs location
+// Define the API base URL
 const API_BASE_URL = 'http://localhost/pisowifi';
 
-// Add console logs to help debug API calls
-const fetchVouchers = async () => {
+const fetchVouchers = async (): Promise<Voucher[]> => {
   console.log('Fetching vouchers from:', `${API_BASE_URL}/vouchers.php`);
-  try {
-    const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-    });
+  
+  const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    credentials: 'omit' // Explicitly disable credentials
+  });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const text = await response.text();
-    console.log('Raw response:', text);
-    
-    try {
-      const data = JSON.parse(text);
-      console.log('Parsed vouchers data:', data);
-      if (data.success && Array.isArray(data.data)) {
-        return data.data;
-      } else {
-        throw new Error('Invalid data format received from server');
-      }
-    } catch (parseError) {
-      console.error('Error parsing JSON:', parseError);
-      throw new Error('Invalid JSON response from server');
-    }
-  } catch (error) {
-    console.error('Fetch error:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  const data = await response.json();
+  console.log('API Response:', data);
+  return data;
 };
 
 const Vouchers = () => {
@@ -59,7 +43,10 @@ const Vouchers = () => {
     queryFn: fetchVouchers,
     retry: 1,
     meta: {
-      onError: (error: Error) => {
+      errorMessage: "Failed to load vouchers"
+    },
+    onSettled: (data, error) => {
+      if (error) {
         console.error('Query error details:', error);
         toast({
           title: "Error loading vouchers",
