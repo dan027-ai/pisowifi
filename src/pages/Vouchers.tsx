@@ -58,13 +58,15 @@ const Vouchers = () => {
     queryKey: ["vouchers"],
     queryFn: fetchVouchers,
     retry: 1,
-    onError: (error) => {
-      console.error('Query error details:', error);
-      toast({
-        title: "Error loading vouchers",
-        description: "Failed to load vouchers. Please try again later.",
-        variant: "destructive",
-      });
+    meta: {
+      onError: (error: Error) => {
+        console.error('Query error details:', error);
+        toast({
+          title: "Error loading vouchers",
+          description: "Failed to load vouchers. Please try again later.",
+          variant: "destructive",
+        });
+      }
     }
   });
 
