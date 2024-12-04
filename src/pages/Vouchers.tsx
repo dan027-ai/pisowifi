@@ -15,16 +15,29 @@ const API_BASE_URL = 'http://localhost/pisowifi';
 const fetchVouchers = async () => {
   console.log('Fetching vouchers from:', `${API_BASE_URL}/vouchers.php`);
   try {
-    const response = await fetch(`${API_BASE_URL}/vouchers.php`);
-    console.log('Response status:', response.status);
+    const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const text = await response.text();
     console.log('Raw response:', text);
     
-    // Try to parse the response as JSON
     try {
       const data = JSON.parse(text);
-      console.log('Parsed data:', data);
-      return data;
+      console.log('Parsed vouchers data:', data);
+      if (data.success && Array.isArray(data.data)) {
+        return data.data;
+      } else {
+        throw new Error('Invalid data format received from server');
+      }
     } catch (parseError) {
       console.error('Error parsing JSON:', parseError);
       throw new Error('Invalid JSON response from server');
@@ -44,6 +57,15 @@ const Vouchers = () => {
   const { data: vouchers = [], isLoading, error } = useQuery({
     queryKey: ["vouchers"],
     queryFn: fetchVouchers,
+    retry: 1,
+    onError: (error) => {
+      console.error('Query error details:', error);
+      toast({
+        title: "Error loading vouchers",
+        description: "Failed to load vouchers. Please try again later.",
+        variant: "destructive",
+      });
+    }
   });
 
   const handlePaymentSubmit = async (formData: {
@@ -57,6 +79,7 @@ const Vouchers = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({
           voucherId: selectedVoucher.id,
@@ -66,6 +89,10 @@ const Vouchers = () => {
           paymentMethod: paymentMethod,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const result = await response.json();
       if (result.success) {
@@ -82,6 +109,7 @@ const Vouchers = () => {
         });
       }
     } catch (error) {
+      console.error('Payment submission error:', error);
       toast({
         title: "Error",
         description: "An error occurred. Please try again.",
