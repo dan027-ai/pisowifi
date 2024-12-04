@@ -8,10 +8,8 @@ import VoucherCard from "@/components/VoucherCard";
 import PaymentForm from "@/components/PaymentForm";
 import type { Voucher, PaymentMethod } from "@/types/voucher";
 
-// Define the API base URL based on environment
-const API_BASE_URL = import.meta.env.DEV 
-  ? 'http://localhost/pisowifi' // Make sure this matches your XAMPP project folder
-  : '';
+// Define the API base URL to always point to XAMPP htdocs location
+const API_BASE_URL = 'http://localhost/pisowifi';
 
 // Add console logs to help debug API calls
 const fetchVouchers = async () => {
@@ -127,4 +125,3 @@ const Vouchers = () => {
 };
 
 export default Vouchers;
-
