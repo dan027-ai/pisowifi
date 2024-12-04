@@ -43,10 +43,8 @@ const Vouchers = () => {
     queryFn: fetchVouchers,
     retry: 1,
     meta: {
-      errorMessage: "Failed to load vouchers"
-    },
-    onSettled: (data, error) => {
-      if (error) {
+      errorMessage: "Failed to load vouchers",
+      onError: (error: Error) => {
         console.error('Query error details:', error);
         toast({
           title: "Error loading vouchers",
