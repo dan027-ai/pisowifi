@@ -10,8 +10,21 @@ import type { Voucher, PaymentMethod } from "@/types/voucher";
 
 // Define the API base URL based on environment
 const API_BASE_URL = import.meta.env.DEV 
-  ? 'http://localhost/pisowifi' // Updated to match your XAMPP folder name
+  ? 'http://localhost/pisowifi' // Make sure this matches your XAMPP project folder
   : '';
+
+// Add console logs to help debug API calls
+const fetchVouchers = async () => {
+  console.log('Fetching vouchers from:', `${API_BASE_URL}/vouchers.php`);
+  const response = await fetch(`${API_BASE_URL}/vouchers.php`);
+  console.log('Response:', response);
+  const result = await response.json();
+  console.log('Result:', result);
+  if (!result.success) {
+    throw new Error(result.error || "Failed to fetch vouchers");
+  }
+  return result.data;
+};
 
 const Vouchers = () => {
   const [searchParams] = useSearchParams();
@@ -21,14 +34,7 @@ const Vouchers = () => {
 
   const { data: vouchers = [], isLoading } = useQuery({
     queryKey: ["vouchers"],
-    queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/vouchers.php`);
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error || "Failed to fetch vouchers");
-      }
-      return result.data;
-    },
+    queryFn: fetchVouchers,
   });
 
   const handlePaymentSubmit = async (formData: {
@@ -121,3 +127,4 @@ const Vouchers = () => {
 };
 
 export default Vouchers;
+
