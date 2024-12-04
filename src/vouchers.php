@@ -1,9 +1,36 @@
 <?php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
 // Database connection
 $conn = new mysqli("localhost", "root", "", "piso_wifi");
 
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die(json_encode([
+        "success" => false,
+        "error" => "Connection failed: " . $conn->connect_error
+    ]));
+}
+
+// Handle GET request to fetch vouchers
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    $result = $conn->query("SELECT * FROM vouchers WHERE is_active = 1");
+    
+    if ($result) {
+        $vouchers = $result->fetch_all(MYSQLI_ASSOC);
+        echo json_encode([
+            "success" => true,
+            "data" => $vouchers
+        ]);
+    } else {
+        echo json_encode([
+            "success" => false,
+            "error" => $conn->error
+        ]);
+    }
+    exit;
 }
 
 // Handle form submission
@@ -54,6 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit;
 }
 
-// Return error for non-POST requests
-echo json_encode(["success" => false, "error" => "Invalid request method"]);
+// Return error for other request methods
+echo json_encode([
+    "success" => false,
+    "error" => "Invalid request method"
+]);
 ?>

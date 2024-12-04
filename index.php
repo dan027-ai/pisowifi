@@ -1,6 +1,6 @@
 <?php
 // Allow CORS
-header('Access-Control-Allow-Origin: http://localhost:5173');  // Allow requests from Vite dev server
+header('Access-Control-Allow-Origin: *');  // Allow requests from any origin during development
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 

@@ -14,14 +14,25 @@ const API_BASE_URL = 'http://localhost/pisowifi';
 // Add console logs to help debug API calls
 const fetchVouchers = async () => {
   console.log('Fetching vouchers from:', `${API_BASE_URL}/vouchers.php`);
-  const response = await fetch(`${API_BASE_URL}/vouchers.php`);
-  console.log('Response:', response);
-  const result = await response.json();
-  console.log('Result:', result);
-  if (!result.success) {
-    throw new Error(result.error || "Failed to fetch vouchers");
+  try {
+    const response = await fetch(`${API_BASE_URL}/vouchers.php`);
+    console.log('Response status:', response.status);
+    const text = await response.text();
+    console.log('Raw response:', text);
+    
+    // Try to parse the response as JSON
+    try {
+      const data = JSON.parse(text);
+      console.log('Parsed data:', data);
+      return data;
+    } catch (parseError) {
+      console.error('Error parsing JSON:', parseError);
+      throw new Error('Invalid JSON response from server');
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
   }
-  return result.data;
 };
 
 const Vouchers = () => {
@@ -30,54 +41,14 @@ const Vouchers = () => {
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const { toast } = useToast();
 
-  const { data: vouchers = [], isLoading } = useQuery({
+  const { data: vouchers = [], isLoading, error } = useQuery({
     queryKey: ["vouchers"],
     queryFn: fetchVouchers,
   });
 
-  const handlePaymentSubmit = async (formData: {
-    phoneNumber: string;
-    email: string;
-  }) => {
-    if (!selectedVoucher) return;
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          voucherId: selectedVoucher.id,
-          phoneNumber: formData.phoneNumber,
-          email: formData.email,
-          price: selectedVoucher.price,
-          paymentMethod: paymentMethod,
-        }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        toast({
-          title: "Payment successful!",
-          description: "Your voucher has been activated.",
-        });
-        setSelectedVoucher(null);
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Payment failed. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An error occurred. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
+  if (error) {
+    console.error('Query error:', error);
+  }
 
   if (isLoading) {
     return <div className="text-center py-12">Loading...</div>;
