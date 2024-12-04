@@ -46,6 +46,50 @@ const Vouchers = () => {
     queryFn: fetchVouchers,
   });
 
+  const handlePaymentSubmit = async (formData: {
+    phoneNumber: string;
+    email: string;
+  }) => {
+    if (!selectedVoucher) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          voucherId: selectedVoucher.id,
+          phoneNumber: formData.phoneNumber,
+          email: formData.email,
+          price: selectedVoucher.price,
+          paymentMethod: paymentMethod,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        toast({
+          title: "Payment successful!",
+          description: "Your voucher has been activated.",
+        });
+        setSelectedVoucher(null);
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Payment failed. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (error) {
     console.error('Query error:', error);
   }
