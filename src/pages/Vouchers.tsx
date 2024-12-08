@@ -14,9 +14,7 @@ export default function Vouchers() {
   const { data: vouchers, isLoading } = useQuery({
     queryKey: ["vouchers"],
     queryFn: async () => {
-      // Use window.location.hostname to dynamically get the current host
-      const host = window.location.hostname;
-      const response = await fetch(`http://${host}/pisowifi/vouchers.php`, {
+      const response = await fetch("/pisowifi/vouchers.php", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
