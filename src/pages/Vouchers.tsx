@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Voucher } from "../types/voucher";
+import { Voucher, PaymentMethod } from "../types/voucher";
 import VoucherCard from "../components/VoucherCard";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import PaymentHeader from "../components/PaymentHeader";
@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 export default function Vouchers() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const paymentMethod = searchParams.get("method") || "gcash";
+  const paymentMethod = (searchParams.get("method") || "gcash") as PaymentMethod;
 
   const { data: vouchers, isLoading } = useQuery({
     queryKey: ["vouchers"],
