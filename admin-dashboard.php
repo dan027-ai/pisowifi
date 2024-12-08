@@ -20,22 +20,8 @@ $conn = getDBConnection();
 if (isset($_POST['delete_voucher'])) {
     $id = $_POST['voucher_id'];
     
-    // First check if there are any transactions using this voucher
-    $checkStmt = $conn->prepare("SELECT COUNT(*) as count FROM transactions WHERE voucher_id = ?");
-    $checkStmt->bind_param("i", $id);
-    $checkStmt->execute();
-    $result = $checkStmt->get_result();
-    $count = $result->fetch_assoc()['count'];
-    $checkStmt->close();
-
-    if ($count > 0) {
-        // If there are transactions, just set is_active to 0 instead of deleting
-        $stmt = $conn->prepare("UPDATE vouchers SET is_active = 0 WHERE id = ?");
-    } else {
-        // If no transactions, we can safely delete
-        $stmt = $conn->prepare("DELETE FROM vouchers WHERE id = ?");
-    }
-    
+    // Instead of deleting, set is_active to 0
+    $stmt = $conn->prepare("UPDATE vouchers SET is_active = 0 WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
