@@ -1,157 +1,74 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
-import PaymentHeader from "@/components/PaymentHeader";
-import PaymentMethodSelector from "@/components/PaymentMethodSelector";
-import VoucherCard from "@/components/VoucherCard";
-import PaymentForm from "@/components/PaymentForm";
-import type { Voucher, PaymentMethod } from "@/types/voucher";
+import { Voucher } from "../types/voucher";
+import VoucherCard from "../components/VoucherCard";
+import PaymentMethodSelector from "../components/PaymentMethodSelector";
+import PaymentHeader from "../components/PaymentHeader";
+import { useToast } from "../hooks/use-toast";
+import { useSearchParams } from "react-router-dom";
 
-// Define the API base URL
-const API_BASE_URL = 'http://localhost/pisowifi';
-
-const fetchVouchers = async (): Promise<Voucher[]> => {
-  console.log('Fetching vouchers from:', `${API_BASE_URL}/vouchers.php`);
-  
-  const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    credentials: 'omit' // Explicitly disable credentials
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const data = await response.json();
-  console.log('API Response:', data);
-  return data;
-};
-
-const Vouchers = () => {
-  const [searchParams] = useSearchParams();
-  const paymentMethod = (searchParams.get("method") || "gcash") as PaymentMethod;
-  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+export default function Vouchers() {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const paymentMethod = searchParams.get("method") || "gcash";
 
-  const { data: vouchers = [], isLoading, error } = useQuery({
+  const { data: vouchers, isLoading } = useQuery({
     queryKey: ["vouchers"],
-    queryFn: fetchVouchers,
-    retry: 1,
-    meta: {
-      errorMessage: "Failed to load vouchers",
-      onError: (error: Error) => {
-        console.error('Query error details:', error);
-        toast({
-          title: "Error loading vouchers",
-          description: "Failed to load vouchers. Please try again later.",
-          variant: "destructive",
-        });
-      }
-    }
-  });
-
-  const handlePaymentSubmit = async (formData: {
-    phoneNumber: string;
-    email: string;
-  }) => {
-    if (!selectedVoucher) return;
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/vouchers.php`, {
-        method: "POST",
+    queryFn: async () => {
+      // Use window.location.hostname to dynamically get the current host
+      const host = window.location.hostname;
+      const response = await fetch(`http://${host}/pisowifi/vouchers.php`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
         },
-        body: JSON.stringify({
-          voucherId: selectedVoucher.id,
-          phoneNumber: formData.phoneNumber,
-          email: formData.email,
-          price: selectedVoucher.price,
-          paymentMethod: paymentMethod,
-        }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error("API Error:", response.status, response.statusText);
+        const errorText = await response.text();
+        console.error("Error details:", errorText);
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
 
-      const result = await response.json();
-      if (result.success) {
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || "Failed to fetch vouchers");
+      }
+
+      return data.data as Voucher[];
+    },
+    meta: {
+      onError: (error: Error) => {
+        console.error("Query error:", error);
         toast({
-          title: "Payment successful!",
-          description: "Your voucher has been activated.",
-        });
-        setSelectedVoucher(null);
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Payment failed. Please try again.",
           variant: "destructive",
+          title: "Error",
+          description: "Failed to load vouchers. Please try again later.",
         });
-      }
-    } catch (error) {
-      console.error('Payment submission error:', error);
-      toast({
-        title: "Error",
-        description: "An error occurred. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  if (error) {
-    console.error('Query error:', error);
-  }
+      },
+    },
+  });
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div>Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto py-8">
-        <PaymentHeader
-          title={`${paymentMethod === 'gcash' ? 'GCash' : 'PayMaya'} Vouchers`}
-          description={`Purchase vouchers quickly and securely using ${
-            paymentMethod === 'gcash' ? 'GCash' : 'PayMaya'
-          }. Select your preferred duration below.`}
-        />
-
-        <PaymentMethodSelector currentMethod={paymentMethod} />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {vouchers.map((voucher) => (
-            <VoucherCard
-              key={voucher.id}
-              voucher={voucher}
-              onSelect={() => setSelectedVoucher(voucher)}
-              isSelected={selectedVoucher?.id === voucher.id}
-              paymentMethod={paymentMethod}
-            />
-          ))}
-        </div>
-
-        {selectedVoucher && (
-          <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-6 text-center">
-              Complete Your Purchase
-            </h2>
-            <PaymentForm
-              selectedPrice={selectedVoucher.price}
-              onSubmit={handlePaymentSubmit}
-              paymentMethod={paymentMethod}
-            />
-          </div>
-        )}
+    <div className="container mx-auto px-4 py-8">
+      <PaymentHeader
+        title={`${paymentMethod.toUpperCase()} Vouchers`}
+        description={`Purchase vouchers quickly and securely using ${paymentMethod.toUpperCase()}. Select your preferred duration below.`}
+      />
+      <PaymentMethodSelector currentMethod={paymentMethod} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {vouchers?.map((voucher) => (
+          <VoucherCard
+            key={voucher.id}
+            voucher={voucher}
+            paymentMethod={paymentMethod}
+          />
+        ))}
       </div>
     </div>
   );
-};
-
-export default Vouchers;
+}
