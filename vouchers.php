@@ -8,7 +8,16 @@ require_once 'components/VoucherGrid.php';
 $conn = getDBConnection();
 
 // Fetch only active vouchers from database
-$result = $conn->query("SELECT * FROM vouchers WHERE is_active = 1");
+$result = $conn->query("SELECT *, 
+    CASE 
+        WHEN quantity_limit IS NOT NULL THEN quantity_limit - COALESCE((
+            SELECT COUNT(*) 
+            FROM transactions 
+            WHERE voucher_id = vouchers.id AND status = 'completed'
+        ), 0)
+        ELSE NULL 
+    END as remaining_quantity 
+    FROM vouchers WHERE is_active = 1");
 $vouchers = $result->fetch_all(MYSQLI_ASSOC);
 
 // Get payment method from URL parameter, default to GCash
@@ -22,10 +31,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $amount = $_POST['price'];
     $payment_method = $_POST['paymentMethod'];
 
+    // Check if voucher has remaining quantity
+    $stmt = $conn->prepare("SELECT quantity_limit, 
+        (SELECT COUNT(*) FROM transactions WHERE voucher_id = ? AND status = 'completed') as used_quantity 
+        FROM vouchers WHERE id = ?");
+    $stmt->bind_param("ii", $voucher_id, $voucher_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $voucher_data = $result->fetch_assoc();
+    
+    if ($voucher_data['quantity_limit'] !== null && 
+        $voucher_data['used_quantity'] >= $voucher_data['quantity_limit']) {
+        echo json_encode(["success" => false, "error" => "Voucher quantity limit reached"]);
+        exit;
+    }
+
     // Simulate a short processing delay (2 seconds)
     sleep(2);
 
-    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method, status) VALUES (?, ?, ?, ?, ?, 'completed')");
     $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
     
     if ($stmt->execute()) {
@@ -91,3 +115,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php require_once 'components/PaymentScripts.php'; ?>
 </body>
 </html>
+```
+
+Let's also update the SQL schema to ensure we have the necessary fields:
+
+<lov-write file_path="sql/schema.sql">
+CREATE TABLE IF NOT EXISTS `vouchers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `price` decimal(10,2) NOT NULL,
+  `duration` varchar(255) NOT NULL,
+  `description` text,
+  `is_active` tinyint(1) DEFAULT 1,
+  `is_promo` tinyint(1) DEFAULT 0,
+  `quantity_limit` int(11) DEFAULT NULL,
+  `promo_end_time` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `voucher_id` int(11),
+  `phone_number` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` varchar(255) NOT NULL,
+  `status` varchar(255) DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `admin_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
