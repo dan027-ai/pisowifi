@@ -5,11 +5,13 @@ import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import PaymentHeader from "../components/PaymentHeader";
 import { useToast } from "../hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 
 export default function Vouchers() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const paymentMethod = (searchParams.get("method") || "gcash") as PaymentMethod;
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
 
   const { data: vouchers, isLoading } = useQuery({
     queryKey: ["vouchers"],
@@ -47,6 +49,14 @@ export default function Vouchers() {
     },
   });
 
+  const handleVoucherSelect = (voucher: Voucher) => {
+    setSelectedVoucher(voucher);
+    toast({
+      title: "Voucher Selected",
+      description: `Selected ${voucher.duration} voucher for ₱${voucher.price}`,
+    });
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -64,6 +74,8 @@ export default function Vouchers() {
             key={voucher.id}
             voucher={voucher}
             paymentMethod={paymentMethod}
+            onSelect={handleVoucherSelect}
+            isSelected={selectedVoucher?.id === voucher.id}
           />
         ))}
       </div>
