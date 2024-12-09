@@ -6,6 +6,7 @@ require_once 'components/admin/VoucherForm.php';
 require_once 'components/admin/VouchersTable.php';
 require_once 'components/admin/TransactionsTable.php';
 require_once 'components/admin/TotalSales.php';
+require_once 'components/admin/SalesChart.php';
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
@@ -83,13 +84,47 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
 </head>
 <body class="min-h-screen bg-gray-50">
     <div class="container mx-auto py-8 px-4">
-        <?php 
-        renderAdminHeader();
-        renderVoucherForm();
-        renderVouchersTable($vouchers);
-        renderTotalSales($conn);
-        renderTransactionsTable($transactions);
-        ?>
+        <?php renderAdminHeader(); ?>
+        
+        <!-- Dashboard Navigation -->
+        <div class="mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onclick="switchTab('overview')" id="overview-tab" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        Overview
+                    </button>
+                    <button onclick="switchTab('vouchers')" id="vouchers-tab" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        Vouchers Management
+                    </button>
+                    <button onclick="switchTab('transactions')" id="transactions-tab" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        Transactions
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview-content" class="tab-content">
+            <div class="grid md:grid-cols-2 gap-8">
+                <?php 
+                renderSalesChart($conn);
+                renderTotalSales($conn);
+                ?>
+            </div>
+        </div>
+
+        <!-- Vouchers Tab -->
+        <div id="vouchers-content" class="tab-content hidden">
+            <?php 
+            renderVoucherForm();
+            renderVouchersTable($vouchers);
+            ?>
+        </div>
+
+        <!-- Transactions Tab -->
+        <div id="transactions-content" class="tab-content hidden">
+            <?php renderTransactionsTable($transactions); ?>
+        </div>
     </div>
 
     <script>
@@ -108,6 +143,32 @@ $transactions = $conn->query("SELECT t.*, v.duration FROM transactions t
         document.querySelector('[name="quantity_limit"]').value = voucher.quantity_limit || '';
         document.querySelector('[name="save_voucher"]').textContent = 'Update Voucher';
     }
+
+    function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+
+        // Remove active state from all tabs
+        document.querySelectorAll('nav button').forEach(tab => {
+            tab.classList.remove('border-indigo-500', 'text-indigo-600');
+            tab.classList.add('border-transparent', 'text-gray-500');
+        });
+
+        // Show selected tab content
+        document.getElementById(`${tabName}-content`).classList.remove('hidden');
+        
+        // Set active state for selected tab
+        const activeTab = document.getElementById(`${tabName}-tab`);
+        activeTab.classList.remove('border-transparent', 'text-gray-500');
+        activeTab.classList.add('border-indigo-500', 'text-indigo-600');
+    }
+
+    // Set Overview as default active tab
+    document.addEventListener('DOMContentLoaded', () => {
+        switchTab('overview');
+    });
     </script>
 </body>
 </html>
