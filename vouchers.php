@@ -46,19 +46,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Simulate a short processing delay (2 seconds)
-    sleep(2);
+    // Start transaction
+    $conn->begin_transaction();
 
-    $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method, status) VALUES (?, ?, ?, ?, ?, 'completed')");
-    $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
-    
-    if ($stmt->execute()) {
+    try {
+        // Insert transaction
+        $stmt = $conn->prepare("INSERT INTO transactions (voucher_id, phone_number, email, amount, payment_method, status) VALUES (?, ?, ?, ?, ?, 'completed')");
+        $stmt->bind_param("issds", $voucher_id, $phone_number, $email, $amount, $payment_method);
+        $stmt->execute();
+
+        // Update remaining_quantity in vouchers table
+        $stmt = $conn->prepare("UPDATE vouchers 
+            SET remaining_quantity = GREATEST(0, quantity_limit - (
+                SELECT COUNT(*) 
+                FROM transactions 
+                WHERE voucher_id = ? AND status = 'completed'
+            ))
+            WHERE id = ? AND quantity_limit IS NOT NULL");
+        $stmt->bind_param("ii", $voucher_id, $voucher_id);
+        $stmt->execute();
+
+        // Commit transaction
+        $conn->commit();
         echo json_encode(["success" => true]);
-    } else {
-        echo json_encode(["success" => false, "error" => $stmt->error]);
+    } catch (Exception $e) {
+        // Rollback transaction on error
+        $conn->rollback();
+        echo json_encode(["success" => false, "error" => $e->getMessage()]);
     }
     
-    $stmt->close();
     exit;
 }
 ?>
