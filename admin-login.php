@@ -41,7 +41,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body class="min-h-screen bg-gray-50 flex items-center justify-center">
     <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold text-center mb-6">Admin Login</h1>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Admin Login</h1>
+            <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Back to Home
+            </a>
+        </div>
         
         <?php if (isset($error)): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
