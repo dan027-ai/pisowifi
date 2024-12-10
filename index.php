@@ -32,7 +32,6 @@ if ($first_segment === 'vouchers.php') {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Check for saved dark mode preference
         if (localStorage.getItem('darkMode') === 'dark') {
             document.documentElement.classList.add('dark');
         }
@@ -44,7 +43,6 @@ if ($first_segment === 'vouchers.php') {
         }
     </script>
     <style>
-        /* Dark mode styles */
         .dark {
             color-scheme: dark;
         }
@@ -52,8 +50,9 @@ if ($first_segment === 'vouchers.php') {
             background: linear-gradient(to bottom, #1a1b26, #24283b);
             color: #ffffff;
         }
-        .dark .bg-white {
+        .dark .feature-card {
             background-color: rgba(30, 41, 59, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
         }
         .dark .text-gray-600 {
             color: #94a3b8;
@@ -81,27 +80,27 @@ if ($first_segment === 'vouchers.php') {
             <h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600 filter drop-shadow-lg">
                 Piso WiFi Connect
             </h1>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto backdrop-blur-sm bg-white/30 p-4 rounded-xl">
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 p-4 rounded-xl">
                 Fast and affordable internet access. Purchase your WiFi voucher now and stay connected!
             </p>
             
             <div class="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto mt-12">
-                <div class="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">⚡</div>
-                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Fast Connection</h3>
-                    <p class="text-gray-600">High-speed internet access for all your needs</p>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Fast Connection</h3>
+                    <p class="text-gray-600 dark:text-gray-300">High-speed internet access for all your needs</p>
                 </div>
                 
-                <div class="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">💰</div>
-                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Affordable Rates</h3>
-                    <p class="text-gray-600">Starting from just ₱5 for 3 hours of access</p>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Affordable Rates</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Starting from just ₱5 for 3 hours of access</p>
                 </div>
                 
-                <div class="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">🔒</div>
-                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Secure Network</h3>
-                    <p class="text-gray-600">Safe and encrypted connection for your privacy</p>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Secure Network</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Safe and encrypted connection for your privacy</p>
                 </div>
             </div>
             

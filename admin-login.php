@@ -57,16 +57,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background: linear-gradient(to bottom, #1a1b26, #24283b);
             color: #ffffff;
         }
-        .dark .bg-white {
+        .dark .form-container {
             background-color: rgba(30, 41, 59, 0.8);
-        }
-        .dark .text-gray-700 {
-            color: #e2e8f0;
         }
         .dark input {
             background-color: rgba(30, 41, 59, 0.8);
             color: #e2e8f0;
             border-color: #4b5563;
+        }
+        .dark .text-gray-700 {
+            color: #e2e8f0;
         }
     </style>
 </head>
@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <div class="container mx-auto px-4 min-h-screen flex items-center justify-center relative">
-        <div class="w-full max-w-md p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 space-y-6">
+        <div class="form-container w-full max-w-md p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 space-y-6">
             <h1 class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600 mb-8">
                 Admin Login
             </h1>

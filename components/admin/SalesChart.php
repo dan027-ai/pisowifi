@@ -1,6 +1,5 @@
 <?php
 function renderSalesChart($conn) {
-    // Fetch monthly sales data for the last 12 months
     $result = $conn->query("
         SELECT 
             DATE_FORMAT(date, '%Y-%m') as month,
@@ -20,8 +19,8 @@ function renderSalesChart($conn) {
     }, $sales);
     ?>
     
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-bold mb-4">Sales Overview</h2>
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold mb-4 dark:text-white">Sales Overview</h2>
         <div class="relative h-[300px]">
             <canvas id="salesChart"></canvas>
         </div>
@@ -29,6 +28,7 @@ function renderSalesChart($conn) {
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const isDark = document.documentElement.classList.contains('dark');
         const ctx = document.getElementById('salesChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -40,7 +40,7 @@ function renderSalesChart($conn) {
                     borderColor: 'rgb(79, 70, 229)',
                     tension: 0.1,
                     fill: true,
-                    backgroundColor: 'rgba(79, 70, 229, 0.1)'
+                    backgroundColor: isDark ? 'rgba(79, 70, 229, 0.2)' : 'rgba(79, 70, 229, 0.1)'
                 }]
             },
             options: {
@@ -57,7 +57,19 @@ function renderSalesChart($conn) {
                         ticks: {
                             callback: function(value) {
                                 return '₱' + value.toLocaleString();
-                            }
+                            },
+                            color: isDark ? '#e2e8f0' : '#1f2937'
+                        },
+                        grid: {
+                            color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: isDark ? '#e2e8f0' : '#1f2937'
+                        },
+                        grid: {
+                            color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
                         }
                     }
                 }
