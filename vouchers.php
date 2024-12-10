@@ -78,9 +78,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit;
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,6 +88,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        if (localStorage.getItem('darkMode') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark ? 'dark' : 'light');
+        }
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -106,9 +115,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     </script>
+    <style>
+        .dark {
+            color-scheme: dark;
+        }
+        .dark body {
+            background: linear-gradient(to bottom, #1a1b26, #24283b);
+            color: #ffffff;
+        }
+        .dark .bg-white {
+            background-color: rgba(30, 41, 59, 0.8);
+        }
+        .dark .text-gray-600 {
+            color: #94a3b8;
+        }
+        .dark .text-gray-700 {
+            color: #e2e8f0;
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-gray-50">
-    <!-- Fixed overlay for the modal -->
+<body class="min-h-screen bg-gray-50 transition-colors duration-200">
+    <!-- Dark Mode Toggle Button -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="toggleDarkMode()" 
+                class="p-2 rounded-lg bg-gray-800/80 hover:bg-gray-900 text-white backdrop-blur-sm transition-all duration-300 hover:scale-105">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
+    </div>
+
     <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
 
     <div class="container mx-auto py-8">

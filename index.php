@@ -22,19 +22,58 @@ if ($first_segment === 'vouchers.php') {
     require_once 'vouchers.php';
     exit;
 }
-
-// Otherwise, serve the React application
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piso WiFi Connect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark ? 'dark' : 'light');
+        }
+    </script>
+    <style>
+        /* Dark mode styles */
+        .dark {
+            color-scheme: dark;
+        }
+        .dark body {
+            background: linear-gradient(to bottom, #1a1b26, #24283b);
+            color: #ffffff;
+        }
+        .dark .bg-white {
+            background-color: rgba(30, 41, 59, 0.8);
+        }
+        .dark .text-gray-600 {
+            color: #94a3b8;
+        }
+        .dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+<body class="min-h-screen bg-gradient-to-b from-blue-50 to-white transition-colors duration-200">
+    <!-- Dark Mode Toggle Button -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="toggleDarkMode()" 
+                class="p-2 rounded-lg bg-gray-800/80 hover:bg-gray-900 text-white backdrop-blur-sm transition-all duration-300 hover:scale-105">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
+    </div>
+
     <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"30\" height=\"30\" viewBox=\"0 0 30 30\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z\" fill=\"rgba(200,200,255,0.07)\"%3E%3C/path%3E%3C/svg%3E')] opacity-25"></div>
     
     <div class="container mx-auto px-4 py-16 relative">
