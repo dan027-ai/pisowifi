@@ -17,22 +17,22 @@ const Home = () => {
           </p>
 
           <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto mt-12">
-            <div className="bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group dark:bg-gray-800/80 dark:border-gray-700">
-              <div className="text-4xl mb-4 bg-gcash-blue/10 dark:bg-yellow-400/90 w-12 h-12 rounded-full flex items-center justify-center mx-auto">⚡</div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Fast Connection</h3>
-              <p className="text-gray-600 dark:text-gray-400">High-speed internet access for all your needs</p>
+            <div className="bg-slate-700/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-slate-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+              <div className="text-4xl mb-4 bg-yellow-400/90 w-12 h-12 rounded-full flex items-center justify-center mx-auto">⚡</div>
+              <h3 className="text-xl font-semibold mb-2 text-white">Fast Connection</h3>
+              <p className="text-gray-200">High-speed internet access for all your needs</p>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group dark:bg-gray-800/80 dark:border-gray-700">
-              <div className="text-4xl mb-4 bg-gcash-blue/10 dark:bg-yellow-400/90 w-12 h-12 rounded-full flex items-center justify-center mx-auto">💰</div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Affordable Rates</h3>
-              <p className="text-gray-600 dark:text-gray-400">Starting from just ₱5 for 3 hours of access</p>
+            <div className="bg-slate-700/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-slate-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+              <div className="text-4xl mb-4 bg-yellow-400/90 w-12 h-12 rounded-full flex items-center justify-center mx-auto">💰</div>
+              <h3 className="text-xl font-semibold mb-2 text-white">Affordable Rates</h3>
+              <p className="text-gray-200">Starting from just ₱5 for 3 hours of access</p>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group dark:bg-gray-800/80 dark:border-gray-700">
-              <div className="text-4xl mb-4 bg-gcash-blue/10 dark:bg-yellow-400/90 w-12 h-12 rounded-full flex items-center justify-center mx-auto">🔒</div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Secure Network</h3>
-              <p className="text-gray-600 dark:text-gray-400">Safe and encrypted connection for your privacy</p>
+            <div className="bg-slate-700/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-slate-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+              <div className="text-4xl mb-4 bg-yellow-400/90 w-12 h-12 rounded-full flex items-center justify-center mx-auto">🔒</div>
+              <h3 className="text-xl font-semibold mb-2 text-white">Secure Network</h3>
+              <p className="text-gray-200">Safe and encrypted connection for your privacy</p>
             </div>
           </div>
 
