@@ -85,19 +85,19 @@ if ($first_segment === 'vouchers.php') {
             </p>
             
             <div class="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto mt-12">
-                <div class="feature-card bg-white/40 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/20 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">⚡</div>
                     <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Fast Connection</h3>
                     <p class="text-gray-600 dark:text-gray-200">High-speed internet access for all your needs</p>
                 </div>
                 
-                <div class="feature-card bg-white/40 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/20 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">💰</div>
                     <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Affordable Rates</h3>
                     <p class="text-gray-600 dark:text-gray-200">Starting from just ₱5 for 3 hours of access</p>
                 </div>
                 
-                <div class="feature-card bg-white/40 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/20 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">🔒</div>
                     <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Secure Network</h3>
                     <p class="text-gray-600 dark:text-gray-200">Safe and encrypted connection for your privacy</p>
