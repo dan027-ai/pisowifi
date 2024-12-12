@@ -28,7 +28,7 @@ if ($first_segment === 'vouchers.php') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piso WiFi Connect</title>
+    <title>JM PisoWifi Plus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -78,29 +78,29 @@ if ($first_segment === 'vouchers.php') {
     <div class="container mx-auto px-4 py-16 relative">
         <div class="text-center space-y-8">
             <h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600 filter drop-shadow-lg">
-                Piso WiFi Connect
+                JM PisoWifi Plus
             </h1>
             <p class="text-xl text-gray-600 max-w-2xl mx-auto backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 p-4 rounded-xl">
                 Fast and affordable internet access. Purchase your WiFi voucher now and stay connected!
             </p>
             
             <div class="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto mt-12">
-                <div class="feature-card bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/40 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">⚡</div>
-                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Fast Connection</h3>
-                    <p class="text-gray-600 dark:text-gray-300">High-speed internet access for all your needs</p>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Fast Connection</h3>
+                    <p class="text-gray-600 dark:text-gray-200">High-speed internet access for all your needs</p>
                 </div>
                 
-                <div class="feature-card bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/40 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">💰</div>
-                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Affordable Rates</h3>
-                    <p class="text-gray-600 dark:text-gray-300">Starting from just ₱5 for 3 hours of access</p>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Affordable Rates</h3>
+                    <p class="text-gray-600 dark:text-gray-200">Starting from just ₱5 for 3 hours of access</p>
                 </div>
                 
-                <div class="feature-card bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 hover:transform hover:scale-105 transition-all duration-300">
+                <div class="feature-card bg-white/40 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
                     <div class="text-4xl text-blue-600 mb-4">🔒</div>
-                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Secure Network</h3>
-                    <p class="text-gray-600 dark:text-gray-300">Safe and encrypted connection for your privacy</p>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Secure Network</h3>
+                    <p class="text-gray-600 dark:text-gray-200">Safe and encrypted connection for your privacy</p>
                 </div>
             </div>
             
