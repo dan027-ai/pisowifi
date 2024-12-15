@@ -83,6 +83,12 @@ if ($first_segment === 'vouchers.php') {
             <p class="text-xl text-gray-600 max-w-2xl mx-auto backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 p-4 rounded-xl">
                 Fast and affordable internet access. Purchase your WiFi voucher now and stay connected!
             </p>
+
+            <!-- Context Diagram Section -->
+            <div class="my-12">
+                <h2 class="text-2xl font-semibold mb-6">System Overview</h2>
+                <div id="context-diagram-root"></div>
+            </div>
             
             <div class="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto mt-12">
                 <div class="feature-card bg-white/20 dark:bg-slate-700/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 hover:transform hover:scale-105 transition-all duration-300">
@@ -122,5 +128,7 @@ if ($first_segment === 'vouchers.php') {
             Admin Controls
         </a>
     </div>
+    
+    <?php renderDashboardScripts(); ?>
 </body>
 </html>
