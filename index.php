@@ -129,6 +129,6 @@ if ($first_segment === 'vouchers.php') {
         </a>
     </div>
     
-    <?php renderDashboardScripts(); ?>
+    
 </body>
 </html>
