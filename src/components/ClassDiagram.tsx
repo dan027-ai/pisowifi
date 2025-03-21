@@ -6,7 +6,7 @@ const ClassDiagram = () => {
     <div className="max-w-4xl mx-auto p-8">
       <h2 className="text-2xl font-semibold mb-6 text-center">PisoWifi System Class Diagram</h2>
       <div className="bg-white p-4 rounded-lg shadow-lg overflow-auto">
-        <svg viewBox="0 0 1000 800" className="w-full">
+        <svg viewBox="0 0 1000 850" className="w-full">
           {/* Grid Background */}
           <defs>
             <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -17,7 +17,7 @@ const ClassDiagram = () => {
               <path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" strokeWidth="1" opacity="0.2" />
             </pattern>
           </defs>
-          <rect width="1000" height="800" fill="url(#grid)" />
+          <rect width="1000" height="850" fill="url(#grid)" />
 
           {/* System Admin Class */}
           <g transform="translate(700, 100)">
@@ -104,8 +104,8 @@ const ClassDiagram = () => {
             <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
           </g>
 
-          {/* Transaction Class */}
-          <g transform="translate(450, 700)">
+          {/* Transaction Class - Moved up slightly */}
+          <g transform="translate(450, 670)">
             <rect width="200" height="150" fill="white" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="110" x2="200" y2="110" stroke="#333" strokeWidth="2" />
@@ -137,21 +137,21 @@ const ClassDiagram = () => {
           <line x1="450" y1="325" x2="700" y2="325" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
           <text x="550" y="315" className="text-xs">Connects to</text>
 
-          {/* Relationship: Payment Gateway to Voucher */}
+          {/* Relationship: Payment Gateway to Voucher - Adjusted to avoid text overlap */}
           <line x1="450" y1="575" x2="700" y2="575" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
-          <text x="550" y="565" className="text-xs">Processes payment for</text>
+          <text x="515" y="560" className="text-xs">Processes payment for</text>
 
           {/* Relationship: Payment Gateway to Transaction */}
-          <line x1="350" y1="650" x2="450" y2="700" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
-          <text x="370" y="680" className="text-xs">Creates</text>
+          <line x1="350" y1="650" x2="450" y2="670" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="370" y="640" className="text-xs">Creates</text>
 
           {/* Relationship: Voucher to Transaction */}
-          <line x1="700" y1="650" x2="550" y2="700" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
-          <text x="600" y="680" className="text-xs">Associated with</text>
+          <line x1="700" y1="650" x2="550" y2="670" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="600" y="640" className="text-xs">Associated with</text>
 
-          {/* Relationship: Admin to Transaction */}
-          <path d="M 900 150 L 950 150 L 950 700 L 650 700" fill="none" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
-          <text x="960" y="400" className="text-xs">Views</text>
+          {/* Relationship: Admin to Transaction - Adjusted path */}
+          <path d="M 900 150 L 980 150 L 980 670 L 650 670" fill="none" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="990" y="400" className="text-xs">Views</text>
 
           {/* Arrow marker definition */}
           <defs>
