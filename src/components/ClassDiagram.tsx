@@ -4,7 +4,7 @@ import React from 'react';
 const ClassDiagram = () => {
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h2 className="text-2xl font-semibold mb-6 text-center">System Class Diagram</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">PisoWifi System Class Diagram</h2>
       <div className="bg-white p-4 rounded-lg shadow-lg overflow-auto">
         <svg viewBox="0 0 1000 800" className="w-full">
           {/* Grid Background */}
@@ -19,32 +19,34 @@ const ClassDiagram = () => {
           </defs>
           <rect width="1000" height="800" fill="url(#grid)" />
 
-          {/* Business Owner Class */}
+          {/* System Admin Class */}
           <g transform="translate(700, 100)">
             <rect width="200" height="150" fill="white" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="80" x2="200" y2="80" stroke="#333" strokeWidth="2" />
-            <text x="100" y="20" textAnchor="middle" fontWeight="bold">Business Owner</text>
-            <text x="10" y="50" className="text-sm">ownerID: String()</text>
-            <text x="10" y="70" className="text-sm">businessName: String()</text>
-            <text x="10" y="100" className="text-sm">Create Invoice()</text>
-            <text x="10" y="120" className="text-sm">Manage Invoice()</text>
+            <text x="100" y="20" textAnchor="middle" fontWeight="bold">System Admin</text>
+            <text x="10" y="50" className="text-sm">adminID: String()</text>
+            <text x="10" y="70" className="text-sm">username: String()</text>
+            <text x="10" y="100" className="text-sm">createVoucher()</text>
+            <text x="10" y="120" className="text-sm">manageVouchers()</text>
+            <text x="10" y="140" className="text-sm">viewTransactions()</text>
             {/* Class Icon */}
             <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
             <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
             <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
           </g>
 
-          {/* Client Class */}
+          {/* Customer Class */}
           <g transform="translate(250, 250)">
             <rect width="200" height="150" fill="white" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="100" x2="200" y2="100" stroke="#333" strokeWidth="2" />
-            <text x="100" y="20" textAnchor="middle" fontWeight="bold">Client</text>
-            <text x="10" y="50" className="text-sm">clientID: String()</text>
-            <text x="10" y="70" className="text-sm">name: String()</text>
-            <text x="10" y="90" className="text-sm">email: String()</text>
-            <text x="10" y="120" className="text-sm">makePayment()</text>
+            <text x="100" y="20" textAnchor="middle" fontWeight="bold">Customer</text>
+            <text x="10" y="50" className="text-sm">phoneNumber: String()</text>
+            <text x="10" y="70" className="text-sm">email: String()</text>
+            <text x="10" y="90" className="text-sm">voucherCode: String()</text>
+            <text x="10" y="120" className="text-sm">purchaseVoucher()</text>
+            <text x="10" y="140" className="text-sm">useWifi()</text>
             {/* Class Icon */}
             <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
             <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
@@ -58,75 +60,98 @@ const ClassDiagram = () => {
             <line x1="0" y1="100" x2="200" y2="100" stroke="#333" strokeWidth="2" />
             <text x="100" y="20" textAnchor="middle" fontWeight="bold">Payment Gateway</text>
             <text x="10" y="50" className="text-sm">gatewayID: String()</text>
-            <text x="10" y="70" className="text-sm">transactionID: String()</text>
-            <text x="10" y="90" className="text-sm">status: String()</text>
-            <text x="10" y="120" className="text-sm">authorizeTransaction()</text>
-            <text x="10" y="140" className="text-sm">updateStatus()</text>
+            <text x="10" y="70" className="text-sm">paymentMethod: String()</text>
+            <text x="10" y="90" className="text-sm">transactionID: String()</text>
+            <text x="10" y="120" className="text-sm">processPayment()</text>
+            <text x="10" y="140" className="text-sm">verifyTransaction()</text>
             {/* Class Icon */}
             <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
             <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
             <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
           </g>
 
-          {/* External Funds Class */}
+          {/* Voucher Class */}
           <g transform="translate(700, 500)">
             <rect width="200" height="150" fill="white" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
-            <line x1="0" y1="80" x2="200" y2="80" stroke="#333" strokeWidth="2" />
-            <text x="100" y="20" textAnchor="middle" fontWeight="bold">External Funds</text>
-            <text x="10" y="50" className="text-sm">fundID: String()</text>
+            <line x1="0" y1="90" x2="200" y2="90" stroke="#333" strokeWidth="2" />
+            <text x="100" y="20" textAnchor="middle" fontWeight="bold">Voucher</text>
+            <text x="10" y="50" className="text-sm">voucherID: String()</text>
+            <text x="10" y="70" className="text-sm">price: Double()</text>
+            <text x="10" y="90" className="text-sm">duration: String()</text>
+            <text x="10" y="110" className="text-sm">generateCode()</text>
+            <text x="10" y="130" className="text-sm">activateVoucher()</text>
+            {/* Class Icon */}
+            <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
+            <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
+            <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
+          </g>
+
+          {/* PisoWifi Device Class */}
+          <g transform="translate(700, 250)">
+            <rect width="200" height="150" fill="white" stroke="#333" strokeWidth="2" />
+            <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
+            <line x1="0" y1="90" x2="200" y2="90" stroke="#333" strokeWidth="2" />
+            <text x="100" y="20" textAnchor="middle" fontWeight="bold">PisoWifi Device</text>
+            <text x="10" y="50" className="text-sm">deviceID: String()</text>
+            <text x="10" y="70" className="text-sm">status: String()</text>
+            <text x="10" y="90" className="text-sm">ipAddress: String()</text>
+            <text x="10" y="110" className="text-sm">validateCode()</text>
+            <text x="10" y="130" className="text-sm">manageConnection()</text>
+            {/* Class Icon */}
+            <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
+            <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
+            <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
+          </g>
+
+          {/* Transaction Class */}
+          <g transform="translate(450, 700)">
+            <rect width="200" height="150" fill="white" stroke="#333" strokeWidth="2" />
+            <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
+            <line x1="0" y1="110" x2="200" y2="110" stroke="#333" strokeWidth="2" />
+            <text x="100" y="20" textAnchor="middle" fontWeight="bold">Transaction</text>
+            <text x="10" y="50" className="text-sm">transactionID: String()</text>
             <text x="10" y="70" className="text-sm">amount: Double()</text>
-            <text x="10" y="100" className="text-sm">transferFunds()</text>
-            <text x="10" y="120" className="text-sm">sendConfirmation()</text>
+            <text x="10" y="90" className="text-sm">date: DateTime()</text>
+            <text x="10" y="110" className="text-sm">status: String()</text>
+            <text x="10" y="130" className="text-sm">recordTransaction()</text>
             {/* Class Icon */}
             <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
             <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
             <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
           </g>
 
-          {/* Admin Class */}
-          <g transform="translate(250, 700)">
-            <rect width="200" height="100" fill="white" stroke="#333" strokeWidth="2" />
-            <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
-            <line x1="0" y1="60" x2="200" y2="60" stroke="#333" strokeWidth="2" />
-            <text x="100" y="20" textAnchor="middle" fontWeight="bold">Admin</text>
-            <text x="10" y="50" className="text-sm">adminID: String()</text>
-            {/* Class Icon */}
-            <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
-            <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
-            <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
-          </g>
+          {/* Relationship: Admin to Voucher */}
+          <line x1="800" y1="250" x2="800" y2="500" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="810" y="370" className="text-xs">Creates</text>
 
-          {/* Banking System Class */}
-          <g transform="translate(700, 700)">
-            <rect width="200" height="100" fill="white" stroke="#333" strokeWidth="2" />
-            <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
-            <line x1="0" y1="60" x2="200" y2="60" stroke="#333" strokeWidth="2" />
-            <text x="100" y="20" textAnchor="middle" fontWeight="bold">Banking System</text>
-            <text x="10" y="50" className="text-sm">bankID: String()</text>
-            {/* Class Icon */}
-            <rect x="10" y="10" width="16" height="16" fill="white" stroke="#333" strokeWidth="1" />
-            <line x1="10" y1="15" x2="26" y2="15" stroke="#333" strokeWidth="1" />
-            <line x1="10" y1="20" x2="26" y2="20" stroke="#333" strokeWidth="1" />
-          </g>
+          {/* Relationship: Admin to PisoWifi Device */}
+          <line x1="750" y1="175" x2="750" y2="250" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="760" y="220" className="text-xs">Manages</text>
 
-          {/* Relationship: Business Owner to Client */}
-          <line x1="700" y1="175" x2="450" y2="250" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
-
-          {/* Relationship: Client to Payment Gateway */}
+          {/* Relationship: Customer to Payment Gateway */}
           <line x1="350" y1="400" x2="350" y2="500" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="360" y="450" className="text-xs">Uses</text>
 
-          {/* Relationship: Payment Gateway to External Funds */}
+          {/* Relationship: Customer to PisoWifi Device */}
+          <line x1="450" y1="325" x2="700" y2="325" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="550" y="315" className="text-xs">Connects to</text>
+
+          {/* Relationship: Payment Gateway to Voucher */}
           <line x1="450" y1="575" x2="700" y2="575" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="550" y="565" className="text-xs">Processes payment for</text>
 
-          {/* Relationship: External Funds to Banking System */}
-          <line x1="800" y1="650" x2="800" y2="700" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          {/* Relationship: Payment Gateway to Transaction */}
+          <line x1="350" y1="650" x2="450" y2="700" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="370" y="680" className="text-xs">Creates</text>
 
-          {/* Relationship: Admin to Payment Gateway */}
-          <line x1="350" y1="700" x2="350" y2="650" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          {/* Relationship: Voucher to Transaction */}
+          <line x1="700" y1="650" x2="550" y2="700" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="600" y="680" className="text-xs">Associated with</text>
 
-          {/* Relationship: Banking System to External Funds */}
-          <line x1="900" y1="700" x2="900" y2="650" stroke="#333" strokeWidth="1.5" strokeDasharray="5,5" markerEnd="url(#arrowhead)" />
+          {/* Relationship: Admin to Transaction */}
+          <path d="M 900 150 L 950 150 L 950 700 L 650 700" fill="none" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <text x="960" y="400" className="text-xs">Views</text>
 
           {/* Arrow marker definition */}
           <defs>
