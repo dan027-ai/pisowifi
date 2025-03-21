@@ -6,7 +6,7 @@ const ClassDiagram = () => {
     <div className="max-w-4xl mx-auto p-8">
       <h2 className="text-2xl font-semibold mb-6 text-center">System Class Diagram</h2>
       <div className="bg-white p-4 rounded-lg shadow-lg overflow-auto">
-        <svg viewBox="0 0 1000 600" className="w-full">
+        <svg viewBox="0 0 1000 800" className="w-full">
           {/* Grid Background */}
           <defs>
             <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -17,7 +17,7 @@ const ClassDiagram = () => {
               <path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" strokeWidth="1" opacity="0.2" />
             </pattern>
           </defs>
-          <rect width="1000" height="600" fill="url(#grid)" />
+          <rect width="1000" height="800" fill="url(#grid)" />
 
           {/* Business Owner Class */}
           <g transform="translate(700, 100)">
@@ -85,7 +85,7 @@ const ClassDiagram = () => {
           </g>
 
           {/* Admin Class */}
-          <g transform="translate(250, 775)">
+          <g transform="translate(250, 700)">
             <rect width="200" height="100" fill="white" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="60" x2="200" y2="60" stroke="#333" strokeWidth="2" />
@@ -98,7 +98,7 @@ const ClassDiagram = () => {
           </g>
 
           {/* Banking System Class */}
-          <g transform="translate(700, 775)">
+          <g transform="translate(700, 700)">
             <rect width="200" height="100" fill="white" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="30" x2="200" y2="30" stroke="#333" strokeWidth="2" />
             <line x1="0" y1="60" x2="200" y2="60" stroke="#333" strokeWidth="2" />
@@ -120,13 +120,13 @@ const ClassDiagram = () => {
           <line x1="450" y1="575" x2="700" y2="575" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
 
           {/* Relationship: External Funds to Banking System */}
-          <line x1="800" y1="650" x2="800" y2="775" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <line x1="800" y1="650" x2="800" y2="700" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
 
           {/* Relationship: Admin to Payment Gateway */}
-          <line x1="350" y1="775" x2="350" y2="650" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+          <line x1="350" y1="700" x2="350" y2="650" stroke="#333" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
 
           {/* Relationship: Banking System to External Funds */}
-          <line x1="900" y1="775" x2="900" y2="650" stroke="#333" strokeWidth="1.5" stroke-dasharray="5,5" markerEnd="url(#arrowhead)" />
+          <line x1="900" y1="700" x2="900" y2="650" stroke="#333" strokeWidth="1.5" strokeDasharray="5,5" markerEnd="url(#arrowhead)" />
 
           {/* Arrow marker definition */}
           <defs>
