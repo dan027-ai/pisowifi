@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 import './App.css';
 import ContextDiagram from './components/ContextDiagram';
 import ClassDiagram from './components/ClassDiagram';
+import MermaidClassDiagram from './components/MermaidClassDiagram';
 
 function App() {
-  const [activeDiagram, setActiveDiagram] = useState<'context' | 'class'>('context');
+  const [activeDiagram, setActiveDiagram] = useState<'context' | 'class' | 'mermaid'>('context');
 
   return (
     <div className="App">
@@ -30,9 +31,20 @@ function App() {
         >
           Class Diagram
         </button>
+        <button
+          onClick={() => setActiveDiagram('mermaid')}
+          className={`px-4 py-2 rounded ${
+            activeDiagram === 'mermaid' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          Mermaid Diagram
+        </button>
       </div>
       
-      {activeDiagram === 'context' ? <ContextDiagram /> : <ClassDiagram />}
+      {activeDiagram === 'context' ? <ContextDiagram /> : 
+       activeDiagram === 'class' ? <ClassDiagram /> : <MermaidClassDiagram />}
     </div>
   );
 }
