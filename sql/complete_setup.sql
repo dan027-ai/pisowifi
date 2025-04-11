@@ -1,3 +1,4 @@
+
 -- Create the database if it doesn't exist
 CREATE DATABASE IF NOT EXISTS `piso_wifi` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `piso_wifi`;
@@ -73,5 +74,7 @@ INSERT INTO `vouchers` (`price`, `duration`, `description`, `is_active`) VALUES
 (150.00, '24 hours', '24 Hours Internet Access', 1);
 
 -- Insert default admin user (username: admin, password: admin123)
+-- Note: You should change this password in production!
+-- The value below is a placeholder - you should generate a proper bcrypt hash
 INSERT INTO `admin_users` (`username`, `password`) VALUES
 ('admin', '$2y$10$your_hashed_password_here');
