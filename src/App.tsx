@@ -1,8 +1,13 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+    // Redirect to the PHP implementation
+    window.location.href = '/pisowifi/index.php';
+  }, []);
+
   return (
     <div className="App">
       <div className="container mx-auto px-4 py-16">
@@ -11,7 +16,7 @@ function App() {
         </h1>
         <div className="text-center mb-8">
           <p className="text-lg text-gray-600">
-            Welcome to the PisoWifi management system.
+            Redirecting to PisoWifi homepage...
           </p>
         </div>
       </div>
